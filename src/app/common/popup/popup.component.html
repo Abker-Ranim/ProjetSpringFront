@@ -1,0 +1,12 @@
+<div *ngIf="show" class="popup-overlay">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h1 class="popup-title">{{ title }}</h1>
+        <i class="fas fa-times close-icon" (click)="onClose()"></i>
+      </div>
+      <div class="popup-body">
+        <ng-content></ng-content>
+      </div>
+    </div>
+  </div>
+  
