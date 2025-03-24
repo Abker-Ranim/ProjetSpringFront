@@ -1,0 +1,203 @@
+.content {
+    display: flex;
+  
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    #side-img {
+      width: 100%; /* Ajuster la largeur de l'image */
+      height: 80%; /* Hauteur proportionnelle */
+      object-fit: cover; /* Remplir l'espace sans déformation */
+      border-radius: 40%;
+    }
+    .left-side {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .right-side {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .main {
+      width: 350px;
+      height: 500px;
+      background: rgb(255, 255, 255);
+      overflow: hidden;
+      border-radius: 10px;
+      margin: 100px;
+      padding: 15px;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  
+      &.multyform,
+      &.subscribe {
+        width: 750px;
+      }
+    }
+    #chk {
+      display: none;
+    }
+    .login {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    label {
+      color: #6d44b8;
+      font-size: 1.3em;
+      justify-content: center;
+      display: flex;
+      margin: 40px;
+      font-weight: bold;
+      padding: 15px;
+    }
+    input {
+      width: 100%;
+      height: 35px;
+      background: #f3f2f3;
+      justify-content: center;
+      display: flex;
+      margin: 20px auto;
+      padding: 12px;
+      border: none;
+      outline: none;
+      border-radius: 5px;
+    }
+    button {
+      width: 50%;
+      height: 40px;
+      margin: 10px auto;
+      justify-content: center;
+      display: block;
+      color: #fff;
+      background: #573b8a;
+      font-size: 1em;
+      font-weight: bold;
+      margin-top: 35px;
+      outline: none;
+      border: none;
+      border-radius: 5px;
+      transition: 0.2s ease-in;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #6d44b8;
+    }
+    button:disabled {
+      background-color: #6d44b8; /* Couleur de fond plus claire */
+      color: #e0e0e0; /* Couleur du texte plus claire */
+      cursor: not-allowed; /* Curseur "non autorisé" */
+      opacity: 0.7; /* Réduire l'opacité pour indiquer qu'il est désactivé */
+    }
+  
+    .form-group {
+      position: relative;
+      width: 65%;
+      margin: 20px auto;
+    }
+  
+    .form-group .icon {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+  
+      color: rgb(85, 85, 85); /* Ou une autre couleur */
+      font-size: 16px;
+    }
+  
+    .form-group input {
+      padding: 12px;
+      border: none;
+      outline: none;
+      border-radius: 5px;
+      background: #f3f2f2;
+    }
+  }
+  .auth-bg {
+    z-index: -1; /* Pour que l'effet reste en arrière-plan */
+    .r {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+  
+      &:first-child {
+        top: 7%;
+        left: 25%;
+        background: linear-gradient(-135deg, #a6ccf7 0%, #1dc4e9 100%);
+      }
+  
+      &:last-child {
+        left: 5%;
+        bottom: 20px;
+        background: linear-gradient(-135deg, #f2bef9 0%, #b396e9 100%);
+      }
+  
+      &.s {
+        width: 20px;
+        height: 20px;
+        &:nth-child(2) {
+          top: 150px;
+          background: #a902a9;
+          left: 45%;
+        }
+  
+        &:nth-child(3) {
+          left: 2%;
+          bottom: 30%;
+          background: #f1cf0c;
+        }
+      }
+  
+      &:nth-child(odd) {
+        animation: floating 7s infinite;
+      }
+  
+      &:nth-child(even) {
+        animation: floating 9s infinite;
+      }
+    }
+  }
+  @keyframes floating {
+    from {
+      transform: rotate(0deg) translate(-10px) rotate(0deg);
+    }
+  
+    to {
+      transform: rotate(360deg) translate(-10px) rotate(-360deg);
+    }
+  }
+  
+  .error {
+    color: red;
+    margin-bottom: 20px;
+  }
+  
+  .form-group.error input.form-control {
+    border: 1px solid red;
+  }
+  
+  .custom-alert {
+    background-color: #ffebee; /* Fond rouge clair */
+    color: #c62828; /* Texte rouge foncé */
+    padding: 12px 20px; /* Espacement intérieur */
+    border-radius: 4px; /* Coins arrondis */
+    border: 1px solid #ffebee; /* Bordure rouge clair */
+    font-size: 0.9rem; /* Taille de police */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espace entre l'icône et le texte */
+    margin-top: 10px; /* Marge en haut */
+  }
+  
+  .custom-alert.error {
+    background-color: #ffcdd2; /* Fond rouge plus vif pour les erreurs */
+    color: #d32f2f; /* Texte rouge plus foncé */
+    border-color: #ffcdd2; /* Bordure rouge */
+  }
+  

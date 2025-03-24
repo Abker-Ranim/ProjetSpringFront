@@ -1,0 +1,105 @@
+<ngx-spinner
+  bdColor="rgba(51,51,51,0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-spin"
+>
+  <p style="font-size: 20px; color: white">Loading...</p>
+</ngx-spinner>
+<div class="content">
+  <div class="left-side">
+    <div class="auth-bg">
+      <span class="r"></span>
+      <span class="r s"></span>
+      <span class="r s"></span>
+      <span class="r"></span>
+    </div>
+    <div class="main">
+      <input type="checkbox" id="chk" aria-hidden="true" />
+
+      <div class="login">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <label for="chk" aria-hidden="true"
+            >Welcome ! <br />
+            Let's get you started
+          </label>
+
+          <div
+            *ngIf="
+              loginForm.get('email')?.touched &&
+              loginForm.get('password')?.touched &&
+              loginError
+            "
+            class="custom-alert error"
+          >
+            Email or Password incorrect.
+          </div>
+          <div
+            class="form-group"
+            [class.error]="
+              loginForm.controls['email'].touched &&
+              (loginForm.hasError('required', 'email') ||
+                loginForm.hasError('pattern', 'email'))
+            "
+          >
+            <input
+              id="email"
+              type="text"
+              required
+              class="form-control"
+              formControlName="email"
+              placeholder="Email"
+            />
+            <fa-icon [icon]="faEnvelope" class="icon"></fa-icon>
+            <small
+              *ngIf="
+                loginForm.controls['email'].touched &&
+                loginForm.hasError('required', 'email')
+              "
+              class="text-danger"
+              >Email is required.</small
+            >
+            <small
+              *ngIf="
+                loginForm.controls['email'].touched &&
+                loginForm.hasError('pattern', 'email')
+              "
+              class="text-danger"
+              >Please enter a valid email address.</small
+            >
+          </div>
+
+          <div
+            class="form-group"
+            [class.error]="
+              loginForm.controls['password'].touched &&
+              loginForm.hasError('required', 'password')
+            "
+          >
+            <input
+              id="password"
+              type="password"
+              required
+              class="form-control"
+              formControlName="password"
+              placeholder="Password"
+            />
+            <fa-icon [icon]="faLock" class="icon"></fa-icon>
+            <small
+              *ngIf="
+                loginForm.controls['password'].touched &&
+                loginForm.hasError('required', 'password')
+              "
+              class="text-danger"
+              >Password is required</small
+            >
+          </div>
+          <button type="submit" [disabled]="loginForm.invalid">Login</button>
+        </form>
+      </div>
+    </div>
+    <div class="right-side">
+      <img src="parascolaire.jpg" alt="side-img" id="side-img" />
+    </div>
+  </div>
+</div>
