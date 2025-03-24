@@ -1,0 +1,58 @@
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+  <br />
+  <ul class="sidebar-nav" id="sidebar-nav">
+    <!-- Liens visibles pour tous les rôles -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" routerLink="home" routerLinkActive="active">
+        <i class="fas fa-th"></i>
+        <span>Home</span>
+      </a>
+    </li>
+    <!-- Liens visibles uniquement pour responsible -->
+    <li class="nav-item" *ngIf="userRole === 'responsible'">
+      <a
+        class="nav-link collapsed"
+        routerLink="event"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-chart-bar"></i><span>event</span>
+      </a>
+    </li>
+    <!-- Liens visibles uniquement pour voluntary -->
+    <li class="nav-item" *ngIf="userRole === 'voluntary'">
+      <a
+        class="nav-link collapsed"
+        routerLink="event"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-chart-bar"></i><span>event</span>
+      </a>
+    </li>
+    <!-- Liens visibles uniquement pour Admin -->
+    <li class="nav-item" *ngIf="userRole === 'admin'">
+      <a
+        class="nav-link collapsed"
+        routerLink="newEvent"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-book"></i><span>newEvent</span>
+      </a>
+    </li>
+
+    <!-- Lien "Request Event" visible uniquement pour Admin et responsible -->
+    <li
+      class="nav-item"
+      *ngIf="userRole === 'admin' || userRole === 'responsible'"
+    >
+      <a
+        class="nav-link collapsed"
+        routerLink="RequestEvent"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-calendar-plus"></i><span>Request an Event</span>
+      </a>
+    </li>
+  </ul>
+</aside>
+<!-- End Sidebar -->
