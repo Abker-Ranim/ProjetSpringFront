@@ -6,21 +6,23 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AuthGuard } from './services/auth-gard.service';
 import { NewEventComponent } from './components/new-event/new-event.component';
 import { EventComponent } from './components/event/event.component';
+import { AcceuilComponent } from './components/acceuil/acceuil.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'acceuil',
     pathMatch: 'full',
   },
-
-  // Route de connexion
   {
-    path: 'login',
-    component: LoginComponent,
+    path: 'acceuil',
+    component: AcceuilComponent,
   },
-   // Routes pour les admins
-   {
+  { path: 'login', 
+    component: LoginComponent },
+
+  // Routes pour les admins
+  {
     path: 'admin',
     component: BodyComponent, // Contient les routes enfants pour l'admin
     canActivate: [AuthGuard], // Vérifie que l'utilisateur est authentifié
@@ -29,7 +31,6 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
       { path: 'newEvent', component: NewEventComponent },
-     
     ],
   },
 
@@ -43,7 +44,6 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
       { path: 'event', component: EventComponent },
-    
     ],
   },
 
@@ -57,7 +57,6 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
       { path: 'event', component: EventComponent },
-     
     ],
   },
 
