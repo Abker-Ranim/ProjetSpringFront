@@ -430,12 +430,7 @@
     background-color: #aab7cf;
   }
   
-  @media (min-width: 1200px) {
-    #main,
-    #footer {
-      margin-left: 300px;
-    }
-  }
+ 
   
   @media (max-width: 1199px) {
     .toggle-sidebar .sidebar {
@@ -492,12 +487,12 @@
   .sidebar-nav .nav-link i {
     font-size: 16px;
     margin-right: 10px;
-    color: #8755e0;
+    color: #421578;
   }
   
   .sidebar-nav .nav-link.collapsed {
     color: #000000;
-    background: #fff;
+    background: #ffffff;
   }
   
   .sidebar-nav .nav-link.collapsed i {
@@ -505,12 +500,12 @@
   }
   
   .sidebar-nav .nav-link:hover {
-    color: #8755e0;
-    background: #e2d3ff;
+    color: #003049;
+    background: #fbf0dd;
   }
   
   .sidebar-nav .nav-link:hover i {
-    color: #8755e0;
+    color: #003049;
   }
   
   .sidebar-nav .nav-link .bi-chevron-down {
@@ -533,7 +528,7 @@
     align-items: center;
     font-size: 14px;
     font-weight: 600;
-    color: #012970;
+    color: #150170;
     transition: 0.3;
     padding: 10px 0 10px 40px;
     transition: 0.3s;
@@ -548,19 +543,19 @@
   
   .sidebar-nav .nav-content a:hover,
   .sidebar-nav .nav-content a.active {
-    color: #8755e0;
+    color: #b1bdfc;
   }
   
   .sidebar-nav .nav-content a.active i {
-    background-color: #8755e0;
+    background-color: #151b78;
   }
   .sidebar-nav .nav-link.active {
-    color: #5f2ba5; /* Couleur du texte pour le lien actif */
-    background: #e2d3ff; /* Couleur de fond pour le lien actif */
+    color: #003049; /* Couleur du texte pour le lien actif */
+    background: #f2bf6c; /* Couleur de fond pour le lien actif */
   }
   
   .sidebar-nav .nav-link.active i {
-    color: #5f2ba5; /* Couleur de l'icône pour le lien actif */
+    color: #f9b74d; /* Couleur de l'icône pour le lien actif */
   }
   
   /*--------------------------------------------------------------
