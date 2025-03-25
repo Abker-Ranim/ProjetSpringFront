@@ -20,7 +20,7 @@
 }
 
 .app-title {
-  color: #4285F4; /* Blue color from the image */
+  color: #21005D; /* Blue color from the image */
   text-align: center;
   margin-bottom: 30px;
   font-size: 28px;
@@ -40,7 +40,7 @@
 }
 
 .auth-title {
-  color: #333;
+  color: #21005D;
   text-align: center;
   margin-bottom: 8px;
   font-size: 22px;
@@ -88,7 +88,7 @@ input {
 
 input:focus {
   outline: none;
-  border-color: #4285F4;
+  border-color: #21005D;
   box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
 }
 
@@ -121,7 +121,7 @@ input:focus {
 .remember-me input {
   width: 16px;
   height: 16px;
-  accent-color: #4285F4;
+  accent-color: #21005D;
 }
 
 .remember-me label {
@@ -134,7 +134,7 @@ input:focus {
 .auth-btn {
   width: 100%;
   padding: 12px;
-  background-color: #4285F4;
+  background-color: #21005D;
   color: white;
   border: none;
   border-radius: 6px;
@@ -145,11 +145,11 @@ input:focus {
 }
 
 .auth-btn:hover {
-  background-color: #3367D6;
+  background-color: #21005D;
 }
 
 .auth-btn:disabled {
-  background-color: #8ab4f8;
+  background-color: #4b6d9c;
   cursor: not-allowed;
 }
 
@@ -194,7 +194,7 @@ input:focus {
 }
 
 .auth-switch a {
-  color: #4285F4;
+  color: #21005D;
   text-decoration: none;
   font-weight: 500;
   cursor: pointer;
