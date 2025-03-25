@@ -1,4 +1,78 @@
+/* Style du logo - Bleu uni comme dans le login */
+.logo-title {
+  color: #21005D;
+ 
+
+
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 0 1rem;
+  letter-spacing: 0.9px;
+}
+
+/* Style général du header */
+.header {
+  background: #fff;
+  padding: 0.8rem 2rem;
+  z-index: 999;
+}
+
+/* Style de la barre de recherche */
+.search-bar {
+  flex-grow: 1;
+  max-width: 500px;
+  margin: 0 2rem;
+}
+
+.search-form input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 30px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.search-form input:focus {
+  border-color: #4285F4;
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
+
+.search-form button {
+  background: none;
+  border: none;
+  color: #4285F4;
+  margin-left: -40px;
+  cursor: pointer;
+}
+
+/* Style du profil */
+.nav-profile img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  padding: 0.5rem 1.5rem;
+  color: #555;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #4285F4;
+}
+
 .logout {
-    cursor: pointer;
-  }
-  
+  cursor: pointer;
+}
+
+.logout span {
+  margin-left: 10px;
+}
