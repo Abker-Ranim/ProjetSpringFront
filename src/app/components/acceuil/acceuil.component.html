@@ -1,0 +1,147 @@
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="nav-container">
+    <ul class="nav-links">
+      <li class="nav-item active"><a href="#accueil">Accueil</a></li>
+      <li class="nav-item"><a href="#offres">Offres</a></li>
+      <li class="nav-item"><a href="#events">Events</a></li>
+      <li class="nav-item"><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="sign-in-btn" (click)="navigateToLogin()">Login</button>  </div>
+</nav>
+
+<!-- Hero Section -->
+<section id="accueil" class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">
+      Engage toi, agis et fais la <span class="highlight">différence</span> !
+    </h1>
+    <p class="hero-description">
+      Rejoins notre communauté de volontaires et contribue à des projets qui ont
+      un impact réel. Chaque action compte et chaque initiative rapproche d'un
+      monde meilleur.
+    </p>
+  </div>
+</section>
+
+<!-- Info Section -->
+<section class="info-section">
+  <div class="info-container">
+    <h2 class="info-title">"Chers étudiants"</h2>
+    <p class="info-text">
+      Cette plateforme vous permet de découvrir et de postuler à des projets de
+      volontariat proposés par l'administration. Vous pourrez consulter les
+      offres disponibles, postuler directement, et suivre l'évolution de vos
+      tâches et responsabilités. Les responsables de projets auront la
+      possibilité de publier des missions, d'attribuer des tâches spécifiques et
+      de suivre vos progrès tout au long de l'engagement.
+    </p>
+  </div>
+</section>
+
+<!-- Feature Cards Section -->
+<section class="features-section">
+  <div class="features-container">
+    <div class="feature-cards">
+      <div class="feature-card" *ngFor="let card of featureCards">
+        <div class="feature-icon">
+          <i [class]="getIconClass(card.icon)"></i>
+        </div>
+        <h3 class="feature-title">{{ card.title }}</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Events Section -->
+<section id="events" class="events-section">
+  <div class="events-container">
+    <h2 class="events-title">Événements à venir</h2>
+
+    <div class="event-card" *ngFor="let event of events">
+      <div
+        class="event-content"
+        [ngClass]="{
+          'event-content-left': event.position === 'left',
+          'event-content-right': event.position === 'right'
+        }"
+      >
+        <div class="event-image-container">
+          <img [src]="event.image" [alt]="event.title" class="event-image" />
+        </div>
+        <div class="event-info">
+          <h3 class="event-title">{{ event.title }}</h3>
+          <p class="event-description" [innerHTML]="event.description"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Surprise Section -->
+<section id="offres" class="surprise-section">
+  <div class="surprise-container">
+    <h2 class="surprise-title">Surprise de fin d'année 🎁</h2>
+    <div class="surprise-content">
+      <div class="surprise-image-container">
+        <img src="event.avif" alt="Cadeau surprise" class="surprise-image" />
+      </div>
+      <div class="surprise-info">
+        <p class="surprise-description">
+          À la fin de l'année, nous célébrerons les meilleurs volontaires ! Ceux
+          qui se sont le plus engagés et qui ont fait la différence se verront
+          offrir une surprise spéciale en reconnaissance de leur travail et de
+          leur dévouement. Restez motivés et montrez ce que vous pouvez
+          accomplir !
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Footer Section -->
+<footer id="contact" class="section footer-section">
+  <div class="section-container footer-container">
+    <div class="footer-columns">
+      <div class="footer-column">
+        <h3 class="footer-title">À propos</h3>
+        <p class="footer-text">
+          Notre plateforme de volontariat connecte les étudiants avec des projets significatifs 
+          qui font une différence dans la communauté.
+        </p>
+      </div>
+      
+      <div class="footer-column">
+        <h3 class="footer-title">Liens rapides</h3>
+        <ul class="footer-links">
+          <li><a href="#hero">Accueil</a></li>
+          <li><a href="#info">Offres</a></li>
+          <li><a href="#features">Projects</a></li>
+          <li><a href="#events">Événements</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3 class="footer-title">Contact</h3>
+        <ul class="footer-contact">
+          <li><i class="fas fa-map-marker-alt"></i> ENICarthage, Tunis, Tunisie</li>
+          <li><i class="fas fa-phone"></i> +216 71 123 456</li>
+          <li><i class="fas fa-envelope"></i> contactenicarthage.tn</li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3 class="footer-title">Suivez-nous</h3>
+        <div class="social-icons">
+          <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2025 ENICarthage. Tous droits réservés.</p>
+    </div>
+  </div>
+</footer>
