@@ -5,34 +5,49 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(route: ActivatedRouteSnapshot): boolean {
-    // Vérifier si l'environnement est un navigateur
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const userRole = localStorage.getItem('userRole'); // Récupère le rôle de l'utilisateur
-      const expectedRole = route.data['role']; // Rôle attendu pour cette route
-
-      // Log pour vérifier les valeurs
-      console.log("Rôle de l'utilisateur:", userRole);
-      console.log('Rôle attendu:', expectedRole);
-
-      if (
-        userRole &&
-        userRole.trim().toLowerCase() === expectedRole.toLowerCase()
-      ) {
-        return true; // L'utilisateur a le rôle correct
-      } else {
-        console.error('Accès refusé : rôle non autorisé');
-        this.router.navigate(['/auth-component']); // Redirection vers la page de connexion
-        return false; // Empêche l'accès à la route
-      }
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): boolean {
+    // 1. Vérifiez si l'utilisateur est connecté
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return false;
     }
-    return false; // Si l'environnement n'est pas un navigateur, empêcher l'accès
+
+    // 2. Récupérez le rôle requis depuis data.roles
+    const requiredRoles = route.data['roles'] as Array<string>;
+
+    // 3. Si aucune restriction de rôle, autorisez l'accès
+    if (!requiredRoles) {
+      return true;
+    }
+
+    // 4. Récupérez le rôle de l'utilisateur
+    const userRole = this.authService.getRole();
+
+    // 5. Vérifiez que le rôle est valide
+    if (!userRole) {
+      this.router.navigate(['/unauthorized']);
+      return false;
+    }
+
+    // 6. Comparez les rôles (en majuscules pour éviter les problèmes de casse)
+    const hasRequiredRole = requiredRoles.some(
+      (role) => role.toUpperCase() === userRole.toUpperCase()
+    );
+
+    if (!hasRequiredRole) {
+      this.router.navigate(['/unauthorized']);
+      return false;
+    }
+
+    return true;
   }
 }
