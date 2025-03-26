@@ -20,7 +20,7 @@
       </a>
     </li>
     <!-- Liens visibles uniquement pour voluntary -->
-    <li class="nav-item" *ngIf="userRole === 'voluntary'">
+    <li class="nav-item" *ngIf="userRole === 'VOLUNTARY'">
       <a
         class="nav-link collapsed"
         routerLink="event"
@@ -30,7 +30,7 @@
       </a>
     </li>
     <!-- Liens visibles uniquement pour Admin -->
-    <li class="nav-item" *ngIf="userRole === 'admin'">
+    <li class="nav-item" *ngIf="userRole === 'ADMIN'">
       <a
         class="nav-link collapsed"
         routerLink="newEvent"
@@ -41,10 +41,7 @@
     </li>
 
     <!-- Lien "Request Event" visible uniquement pour Admin et responsible -->
-    <li
-      class="nav-item"
-      *ngIf="userRole === 'admin' || userRole === 'responsible'"
-    >
+    <li class="nav-item" *ngIf="userRole === 'ADMIN' || userRole === 'VOLUNTARY'">
       <a
         class="nav-link collapsed"
         routerLink="RequestEvent"
