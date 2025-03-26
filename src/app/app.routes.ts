@@ -18,15 +18,14 @@ export const routes: Routes = [
     path: 'acceuil',
     component: AcceuilComponent,
   },
-  { path: 'login', 
-    component: LoginComponent },
+  { path: 'login', component: LoginComponent },
 
   // Routes pour les admins
   {
     path: 'admin',
     component: BodyComponent, // Contient les routes enfants pour l'admin
     canActivate: [AuthGuard], // Vérifie que l'utilisateur est authentifié
-    data: { role: 'admin' }, // Rôle attendu pour accéder à ces routes
+    data: { role: ['ADMIN'] }, // Rôle attendu pour accéder à ces routes
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
@@ -52,7 +51,7 @@ export const routes: Routes = [
     path: 'voluntary',
     component: BodyComponent,
     canActivate: [AuthGuard], // Vérifie que l'utilisateur est authentifié
-    data: { role: 'voluntary' }, // Rôle attendu pour accéder à ces routes
+    data: { role: ['VOLUNTARY'] }, // Rôle attendu pour accéder à ces routes
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
