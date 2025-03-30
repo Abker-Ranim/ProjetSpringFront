@@ -4,9 +4,9 @@ import { LoginComponent } from './components/login/login.component';
 import { BodyComponent } from './common/body/body.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AuthGuard } from './services/auth-gard.service';
-import { NewEventComponent } from './components/new-event/new-event.component';
 import { EventComponent } from './components/event/event.component';
 import { AcceuilComponent } from './components/acceuil/acceuil.component';
+import { EventDetailComponent } from './components/event-detail/event-detail.component';
 
 export const routes: Routes = [
   {
@@ -23,13 +23,14 @@ export const routes: Routes = [
   // Routes pour les admins
   {
     path: 'admin',
-    component: BodyComponent, // Contient les routes enfants pour l'admin
-    canActivate: [AuthGuard], // Vérifie que l'utilisateur est authentifié
-    data: { role: ['ADMIN'] }, // Rôle attendu pour accéder à ces routes
+    component: BodyComponent, 
+    canActivate: [AuthGuard], 
+    data: { role: ['ADMIN'] }, 
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
-      { path: 'newEvent', component: NewEventComponent },
+      { path: 'event', component: EventComponent },
+      { path: "events/:id", component: EventDetailComponent },
     ],
   },
 
@@ -37,8 +38,8 @@ export const routes: Routes = [
   {
     path: 'responsible',
     component: BodyComponent,
-    canActivate: [AuthGuard], // Vérifie que l'utilisateur est authentifié
-    data: { role: 'responsible' }, // Rôle attendu pour accéder à ces routes
+    canActivate: [AuthGuard], 
+    data: { role: 'responsible' }, 
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
@@ -50,12 +51,14 @@ export const routes: Routes = [
   {
     path: 'voluntary',
     component: BodyComponent,
-    canActivate: [AuthGuard], // Vérifie que l'utilisateur est authentifié
-    data: { role: ['VOLUNTARY'] }, // Rôle attendu pour accéder à ces routes
+    canActivate: [AuthGuard], 
+    data: { role: ['VOLUNTARY'] }, 
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
       { path: 'event', component: EventComponent },
+      { path: "events/:id", component: EventDetailComponent },
+
     ],
   },
 
