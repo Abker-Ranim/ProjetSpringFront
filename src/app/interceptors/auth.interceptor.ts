@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  // Vérifiez si l'URL contient '/api/v1/auth/'
   if (req.url.includes('/api/v1/auth/')) {
     return next(req);
   }
@@ -20,7 +19,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError(error => {
       if (error.status === 401) {
         authService.logout();
-        router.navigate(['/acceuil']); // Assurez-vous que cette route existe
+        router.navigate(['/acceuil']); 
       }
       throw error;
     })
