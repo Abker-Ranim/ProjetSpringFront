@@ -1,1 +1,331 @@
-<p>event works!</p>
+<div class="event-management-container">
+  <header class="header">
+  <h1>Gestion des Événements</h1>
+  <button *ngIf="canAddEvent()" class="add-button" (click)="openAddEventModal()">
+    <i class="fas fa-plus"></i> Ajouter un événement
+  </button>
+</header>
+
+  <div class="filters">
+    <div class="filter-group">
+      <button
+        [class.active]="currentFilter === 'all'"
+        (click)="filterEvents('all')"
+      >
+        Tous
+      </button>
+      <button
+        [class.active]="currentFilter === 'upcoming'"
+        (click)="filterEvents('upcoming')"
+      >
+        À venir
+      </button>
+      <button
+        [class.active]="currentFilter === 'past'"
+        (click)="filterEvents('past')"
+      >
+        Passés
+      </button>
+    </div>
+    <div class="search-group">
+      <input
+        type="text"
+        placeholder="Rechercher un événement..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+      />
+    </div>
+  </div>
+  <div class="events-list">
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Chargement des événements...</p>
+    </div>
+
+    <div *ngIf="!loading && filteredEvents.length === 0" class="no-events">
+      <p>Aucun événement trouvé</p>
+    </div>
+
+    <div *ngFor="let event of filteredEvents" class="event-card">
+      <div class="event-header">
+        <div class="event-time">
+          {{ event.createdAt | date : "dd MMM yyyy" }}
+        </div>
+        <div
+          class="event-status"
+          [class.upcoming]="isUpcoming(event)"
+          [class.past]="!isUpcoming(event)"
+        >
+          {{ isUpcoming(event) ? "À venir" : "Passé" }}
+        </div>
+      </div>
+
+      <div class="event-body">
+        <div class="event-details">
+          <h3 class="event-title">{{ event.title }}</h3>
+
+          <div class="event-meta">
+            <div class="meta-item">
+              <i class="fas fa-calendar"></i>
+              <span>{{ event.startDate | date : "dd/MM/yyyy" }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-clock"></i>
+              <span
+                >{{ event.startDate | date : "HH:mm" }} -
+                {{ event.endDate | date : "HH:mm" }}</span
+              >
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>{{ event.location }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-actions">
+       
+        <button 
+        *ngIf="canAssignResponsible() && !event.responsiblePerson" 
+        class="action-button assign" 
+        (click)="openAssignResponsibleModal(event)">
+        Assigner un responsable
+      </button>
+      <button *ngIf="event.responsiblePerson" class="action-button responsible" [disabled]="true">
+        Responsable: {{ event.responsiblePerson.email }}
+      </button>
+      <button class="action-button details" (click)="viewEventDetails(event)">
+        Voir les détails
+      </button>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <button
+        [disabled]="currentPage === 1"
+        (click)="changePage(currentPage - 1)"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <span
+        *ngFor="let page of getPageNumbers()"
+        [class.active]="page === currentPage"
+        (click)="changePage(page)"
+      >
+        {{ page }}
+      </span>
+      <button
+        [disabled]="currentPage === totalPages"
+        (click)="changePage(currentPage + 1)"
+      >
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal pour ajouter un événement -->
+  <div class="modal" *ngIf="showAddEventModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Ajouter un événement</h2>
+        <button class="close-button" (click)="closeAddEventModal()">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="eventForm" (ngSubmit)="submitEventForm()">
+          <div class="form-group">
+            <label for="title">Nom de l'événement</label>
+            <input
+              type="text"
+              id="title"
+              formControlName="title"
+              placeholder="Nom de l'événement"
+            />
+            <div
+              *ngIf="
+                eventForm.get('title')?.invalid &&
+                eventForm.get('title')?.touched
+              "
+              class="error-message"
+            >
+              Le nom de l'événement est requis
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="location">Lieu</label>
+            <input
+              type="text"
+              id="location"
+              formControlName="location"
+              placeholder="Sélectionnez un lieu"
+            />
+
+            <div
+              *ngIf="
+                eventForm.get('location')?.invalid &&
+                eventForm.get('location')?.touched
+              "
+              class="error-message"
+            >
+              Le lieu est requis
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              placeholder="Description de l'événement"
+            ></textarea>
+            <div
+              *ngIf="
+                eventForm.get('description')?.invalid &&
+                eventForm.get('description')?.touched
+              "
+              class="error-message"
+            >
+              La description est requise
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="startDate">Date de début</label>
+              <input
+                type="datetime-local"
+                id="startDate"
+                formControlName="startDate"
+              />
+              <div
+                *ngIf="
+                  eventForm.get('startDate')?.invalid &&
+                  eventForm.get('startDate')?.touched
+                "
+                class="error-message"
+              >
+                La date de début est requise
+              </div>
+            </div>
+
+            <div class="form-group half">
+              <label for="endDate">Date de fin</label>
+              <input
+                type="datetime-local"
+                id="endDate"
+                formControlName="endDate"
+              />
+              <div
+                *ngIf="
+                  eventForm.get('endDate')?.invalid &&
+                  eventForm.get('endDate')?.touched
+                "
+                class="error-message"
+              >
+                La date de fin est requise
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="closeAddEventModal()"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="submit-button"
+              [disabled]="eventForm.invalid || submitting"
+            >
+              <span *ngIf="!submitting">Ajouter</span>
+              <span *ngIf="submitting">
+                <div class="spinner-small"></div>
+                Ajout en cours...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal pour assigner un responsable -->
+  <div class="modal" *ngIf="showAssignResponsibleModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Assigner un responsable</h2>
+        <button class="close-button" (click)="closeAssignResponsibleModal()">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <form
+          [formGroup]="responsibleForm"
+          (ngSubmit)="submitResponsibleForm()"
+        >
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="Email du responsable"
+            />
+            <div
+              *ngIf="
+                responsibleForm.get('email')?.invalid &&
+                responsibleForm.get('email')?.touched
+              "
+              class="error-message"
+            >
+              Un email valide est requis
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="responsibleDescription">Description</label>
+            <textarea
+              id="responsibleDescription"
+              formControlName="description"
+              placeholder="Description du rôle (optionnel)"
+            ></textarea>
+          </div>
+
+          <div class="form-info">
+            <p>
+              <i class="fas fa-info-circle"></i> Un compte sera créé pour cette
+              personne et les identifiants seront envoyés par email.
+            </p>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="closeAssignResponsibleModal()"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="submit-button"
+              [disabled]="responsibleForm.invalid || submitting"
+            >
+              <span *ngIf="!submitting">Assigner</span>
+              <span *ngIf="submitting">
+                <div class="spinner-small"></div>
+                Assignation en cours...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
