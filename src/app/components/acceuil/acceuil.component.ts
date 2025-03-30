@@ -1,14 +1,14 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from "@angular/common"
+import { Component, OnInit } from "@angular/core"
+import  { Router } from "@angular/router"
 
 @Component({
-  selector: 'app-acceuil',
-  imports: [CommonModule ],
-  templateUrl: './acceuil.component.html',
-  styleUrl: './acceuil.component.css'
+  selector: "app-acceuil",
+  imports: [CommonModule],
+  templateUrl: "./acceuil.component.html",
+  styleUrl: "./acceuil.component.css",
 })
-export class AcceuilComponent implements OnInit{
+export class AcceuilComponent implements OnInit {
   featureCards = [
     {
       icon: "users",
@@ -57,9 +57,26 @@ export class AcceuilComponent implements OnInit{
     },
   ]
 
+  ngOnInit(): void {
+    window.addEventListener("scroll", this.handleScroll)
+  }
 
+  ngOnDestroy(): void {
+    window.removeEventListener("scroll", this.handleScroll)
+  }
 
-  ngOnInit(): void {}
+  handleScroll = (): void => {
+    const navbar = document.querySelector(".navbar") as HTMLElement
+    if (window.scrollY > 50) {
+      navbar.style.padding = "10px 0"
+      navbar.style.backgroundColor = "rgba(255, 255, 255, 0.95)"
+      navbar.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.1)"
+    } else {
+      navbar.style.padding = "15px 0"
+      navbar.style.backgroundColor = "transparent"
+      navbar.style.boxShadow = "none"
+    }
+  }
 
   getIconClass(icon: string): string {
     switch (icon) {
@@ -75,10 +92,11 @@ export class AcceuilComponent implements OnInit{
         return "fas fa-star"
     }
   }
+
   constructor(private router: Router) {}
 
-
   navigateToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(["/login"])
   }
 }
+
