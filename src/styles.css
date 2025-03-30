@@ -300,7 +300,6 @@
     transition: all 0.5s;
     z-index: 997;
     height: 60px;
-    background-color: #fff;
     padding: 0 20px;
     display: flex;
     align-items: center;
