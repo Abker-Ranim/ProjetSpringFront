@@ -1,321 +1,40 @@
 <div class="event-detail-container" *ngIf="event">
   <div class="event-header">
     <div class="event-header-content">
+      <!-- Image + titre -->
+      <div class="event-image" *ngIf="event.imageUrl">
+        <img [src]="event.imageUrl" alt="{{ event.title }}">
+      </div>
       <div class="event-title-section">
         <h1>{{ event.title }}</h1>
-        <div
-          class="event-status"
-          [class.upcoming]="isUpcoming(event)"
-          [class.past]="!isUpcoming(event)"
-        >
-          {{ isUpcoming(event) ? "À venir" : "Passé" }}
-        </div>
       </div>
-      <button class="interested-button">Intéressé</button>
+      <!-- Bouton Intéressé pour volonatry -->
+      <button
+        *ngIf="isVOLUNTARY()"
+        class="interested-button"
+        (click)="toggleInterest()"
+        [ngClass]="{'star-interested': event.isInterested}"
+      >
+        <i class="fas fa-star"></i>
+      </button>
     </div>
-  </div>
-
-  <div class="event-content">
-    <div class="event-main">
-      <section class="event-section">
-        <h2>Description</h2>
-        <p>{{ event.description }}</p>
-      </section>
-
-      <section class="event-section">
-        <h2>Bénéfices</h2>
-        <ul class="benefits-list">
-          <li>
-            <i class="fas fa-check"></i> Acquérir de l'expérience pratique dans
-            l'organisation d'événements
-          </li>
-          <li>
-            <i class="fas fa-check"></i> Développer votre réseau professionnel
-          </li>
-          <li>
-            <i class="fas fa-check"></i> Contribuer à un projet significatif
-          </li>
-          <li>
-            <i class="fas fa-check"></i> Obtenir une attestation de
-            participation
-          </li>
+  
+    <div class="event-nav-container">
+      <nav class="event-nav">
+        <ul>
+          <li routerLinkActive="active" [routerLink]="['detail']">Détails</li>
+          <li routerLinkActive="active" [routerLink]="['postes']">Postes</li>
+          <li routerLinkActive="active" [routerLink]="['teams']">Teams</li>
         </ul>
-      </section>
-
-      <section class="event-section">
-        <h2>Vision</h2>
-        <p>
-          Cet événement vise à créer un espace d'échange et d'apprentissage pour
-          tous les participants. Notre objectif est de favoriser l'innovation et
-          la collaboration entre les différents acteurs du domaine.
-        </p>
-      </section>
-
-      <section class="event-section">
-        <h2 class="postes-title">Postes disponibles</h2>
-
-        <div class="postes-container">
-          <div class="postes-navigation">
-            <button class="nav-button prev" (click)="prevPostes()">
-              <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="nav-button next" (click)="nextPostes()">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
-
-          <div class="postes-grid">
-            <div class="poste-card" *ngFor="let poste of displayedPostes">
-              <div class="poste-header">
-                <div class="poste-icon">
-                  <i class="fas fa-user-tie"></i>
-                </div>
-                <div class="poste-title">
-                  <h3>{{ poste.title }}</h3>
-                  <p>{{ poste.type }}</p>
-                </div>
-                <button class="apply-button" (click)="openApplyForm(poste)"  *ngIf="canApply()">
-                  Apply Now <i class="fas fa-arrow-right"></i>
-                </button>
-              </div>
-              <div class="poste-body">
-                <h4>Job Description</h4>
-                <p>{{ poste.description }}</p>
-                <h4>Compétences</h4>
-                <ul>
-                  <li *ngFor="let competence of poste.competences">
-                    {{ competence }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="event-section">
-        <h2>Partagez cet événement</h2>
-        <div class="social-share">
-          <button class="social-button facebook">
-            <i class="fab fa-facebook-f"></i> Facebook
-          </button>
-          <button class="social-button twitter">
-            <i class="fab fa-twitter"></i> Twitter
-          </button>
-          <button class="social-button linkedin">
-            <i class="fab fa-linkedin-in"></i> LinkedIn
-          </button>
-        </div>
-      </section>
-    </div>
-
-    <div class="event-sidebar">
-      <div class="info-card">
-        <div class="info-item">
-          <div class="info-icon">
-            <i class="fas fa-calendar"></i>
-          </div>
-          <div class="info-content">
-            <h3>Date</h3>
-            <p>{{ event.startDate | date : "dd MMMM, yyyy" }}</p>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <div class="info-icon">
-            <i class="fas fa-building"></i>
-          </div>
-          <div class="info-content">
-            <h3>Organisation</h3>
-            <p>{{ event.organization || "Non spécifié" }}</p>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <div class="info-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <div class="info-content">
-            <h3>Participants</h3>
-            <p>{{ event.participants || "0" }} Candidats</p>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <div class="info-icon">
-            <i class="fas fa-map-marker-alt"></i>
-          </div>
-          <div class="info-content">
-            <h3>Lieu</h3>
-            <p>{{ event.location }}</p>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <div class="info-icon">
-            <i class="fas fa-laptop-code"></i>
-          </div>
-          <div class="info-content">
-            <h3>Technologie</h3>
-            <p>{{ event.technology || "Diverses technologies" }}</p>
-          </div>
-        </div>
+      </nav>
+    
+      <div class="event-nav-actions">
+        <button  (click)="onEditEvent()" *ngIf="isAdmin()">Modifier</button>
       </div>
     </div>
+    
   </div>
-</div>
+  <ng-container *ngIf="event">
+    <router-outlet></router-outlet>
+  </ng-container>
 
-<!-- Mise à jour du formulaire de candidature pour un design plus moderne -->
-<div class="modal" *ngIf="showApplyModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Postuler pour: {{ selectedPoste?.title }}</h2>
-      <button class="close-button" (click)="closeApplyModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <form [formGroup]="applyForm" (ngSubmit)="submitApplication()">
-        <div class="form-group">
-          <label for="name">Nom complet</label>
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            placeholder="Entrez votre nom complet"
-          />
-          <div
-            *ngIf="
-              applyForm.get('name')?.invalid && applyForm.get('name')?.touched
-            "
-            class="error-message"
-          >
-            Le nom est requis
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            formControlName="email"
-            placeholder="Entrez votre adresse email"
-          />
-          <div
-            *ngIf="
-              applyForm.get('email')?.invalid && applyForm.get('email')?.touched
-            "
-            class="error-message"
-          >
-            Un email valide est requis
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="phone">Téléphone</label>
-          <input
-            type="tel"
-            id="phone"
-            formControlName="phone"
-            placeholder="Entrez votre numéro de téléphone"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="motivation">Lettre de motivation</label>
-          <textarea
-            id="motivation"
-            formControlName="motivation"
-            placeholder="Expliquez pourquoi vous souhaitez participer à cet événement et ce que vous pouvez apporter"
-          ></textarea>
-          <div
-            *ngIf="
-              applyForm.get('motivation')?.invalid &&
-              applyForm.get('motivation')?.touched
-            "
-            class="error-message"
-          >
-            La lettre de motivation est requise
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="experience">Expérience pertinente</label>
-          <textarea
-            id="experience"
-            formControlName="experience"
-            placeholder="Décrivez votre expérience en lien avec ce poste et vos compétences"
-          ></textarea>
-        </div>
-
-        <div class="form-info">
-          <p>
-            <i class="fas fa-info-circle"></i> Votre candidature sera examinée
-            par l'équipe organisatrice qui vous contactera dans les plus brefs
-            délais.
-          </p>
-        </div>
-
-        <div class="form-group">
-          <label for="cv">CV (optionnel)</label>
-          <input
-            type="file"
-            id="cv"
-            class="file-input"
-            (change)="onFileSelected($event)"
-          />
-          <div class="file-upload-wrapper">
-            <button type="button" class="file-upload-button">
-              <i class="fas fa-upload"></i> Choisir un fichier
-            </button>
-            <span class="file-name">{{
-              fileName || "Aucun fichier choisi"
-            }}</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="checkbox-label">
-            <input type="checkbox" formControlName="terms" />
-            J'accepte les conditions de participation et la politique de
-            confidentialité
-          </label>
-          <div
-            *ngIf="
-              applyForm.get('terms')?.invalid && applyForm.get('terms')?.touched
-            "
-            class="error-message"
-          >
-            Vous devez accepter les conditions
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button
-            type="button"
-            class="cancel-button"
-            (click)="closeApplyModal()"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            class="submit-button"
-            [disabled]="applyForm.invalid || submitting"
-          >
-            <span *ngIf="!submitting">Envoyer ma candidature</span>
-            <span *ngIf="submitting">
-              <div class="spinner-small"></div>
-              Envoi en cours...
-            </span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="back-button-container">
-  <button class="back-button" (click)="goBack()">
-    <i class="fas fa-arrow-left"></i> Retour à la liste
-  </button>
-</div>

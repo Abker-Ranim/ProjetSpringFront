@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
@@ -76,31 +70,43 @@ export class LoginComponent {
 
     this.spinner.show();
     this.authService.login(this.loginForm.value).subscribe({
-      next: () => {
+      next: (response) => {
         this.spinner.hide();
-        console.log('Données stockées:', {
+        console.log('Response received from backend:', response);
+
+        if (!response.access_token) {
+          this.loginError = 'Error: Token not received';
+          return;
+        }
+
+        localStorage.setItem('auth_token', response.access_token);
+        localStorage.setItem('userRole', response.role);
+
+        console.log('Stored data:', {
           token: localStorage.getItem('auth_token'),
           role: localStorage.getItem('userRole'),
         });
+
         const role = this.authService.getRole();
-        console.log('Rôle obtenu:', role);
+        console.log('Role obtained:', role);
+
         if (!role) {
-          this.loginError = 'Erreur de rôle utilisateur';
+          this.loginError = 'Error: User role not found';
           return;
         }
-        // Redirection basée sur le rôle
-        this.router.navigate([
-          role === 'ADMIN' ? 'admin/home' : 'voluntary/event', 
-        ]);
+
+        // Role-based redirection
+        this.router.navigate([role.toLowerCase(), 'event']);
       },
       error: (err) => {
         this.spinner.hide();
-        this.loginError =
-          err.error?.message || 'Email ou mot de passe incorrect';
+        this.loginError = err.error?.message || 'Incorrect email or password';
+        console.error('Login error:', err);
       },
     });
   }
 
+  // Handle signup
   onSignup() {
     if (this.signupForm.invalid) return;
 
@@ -110,14 +116,14 @@ export class LoginComponent {
     this.authService.register(this.signupForm.value).subscribe({
       next: () => {
         this.spinner.hide();
-        this.isSignUpMode = false; // Retour au mode login
-        this.signupForm.reset(); // Réinitialise le formulaire
-        // Message de succès
-        this.loginError = 'Inscription réussie! Veuillez vous connecter.';
+        this.isSignUpMode = false;
+        this.signupForm.reset();
+        this.signupError = null; // Reset signup error
+        this.loginError = 'Registration successful! Please log in.';
       },
       error: (err) => {
         this.spinner.hide();
-        this.signupError = err.error?.message || "Erreur lors de l'inscription";
+        this.signupError = err.error?.message || 'Error during registration';
       },
     });
   }

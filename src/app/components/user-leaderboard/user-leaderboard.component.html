@@ -1,0 +1,119 @@
+<section class="leaderboard-section">
+    
+    <div class="leaderboard-container">
+      <div class="leaderboard-filters">
+        <div class="search-box">
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Rechercher un utilisateur..." 
+            [(ngModel)]="searchTerm"
+            (input)="search()"
+          >
+          <i class="fas fa-search search-icon"></i>
+        </div>
+        
+        <div class="filter-box">
+          <label for="department-filter">Département:</label>
+          <select 
+            id="department-filter" 
+            [(ngModel)]="departmentFilter" 
+            (change)="setDepartmentFilter(departmentFilter)"
+          >
+            <option value="all">Tous les départements</option>
+            <option *ngFor="let department of departments" [value]="department">{{ department }}</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="leaderboard-table-container">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th class="th-rank" (click)="setSortBy('rank')">
+                Rang <i class="fas" [ngClass]="getSortIcon('rank')"></i>
+              </th>
+              <th class="th-user" (click)="setSortBy('name')">
+                Utilisateur <i class="fas" [ngClass]="getSortIcon('name')"></i>
+              </th>
+              <th class="th-department" (click)="setSortBy('department')">
+                Département <i class="fas" [ngClass]="getSortIcon('department')"></i>
+              </th>
+              <th class="th-score" (click)="setSortBy('score')">
+                Score <i class="fas" [ngClass]="getSortIcon('score')"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers; let i = index" [ngClass]="{'row-alternate': i % 2 === 1}">
+              <td class="td-rank">
+                <div class="rank-badge" [ngClass]="getRankClass(user.rank || 0)">
+                  {{ user.rank }}
+                </div>
+              </td>
+              <td class="td-user">
+                <div class="user-info">
+                  <div class="user-avatar">
+                    <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.name">
+                    <div *ngIf="!user.avatar" class="avatar-placeholder">
+                      {{ user.name.charAt(0) }}
+                    </div>
+                  </div>
+                  <div class="user-name">{{ user.name }}</div>
+                </div>
+              </td>
+              <td class="td-department">{{ user.department }}</td>
+              <td class="td-score">{{ user.score }}</td>
+             
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="no-results" *ngIf="filteredUsers.length === 0">
+        <p>Aucun utilisateur trouvé</p>
+      </div>
+      
+      <!-- Podium for top 3 users on mobile view -->
+      <div class="leaderboard-podium">
+        <div class="podium-container">
+          <!-- Second Place -->
+          <div class="podium-position" *ngIf="getSecondPlace() as user">
+            <div class="podium-avatar">
+              <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.name">
+              <div *ngIf="!user.avatar" class="avatar-placeholder">{{ user.name.charAt(0) }}</div>
+            </div>
+            <div class="podium-rank rank-top-2">2</div>
+            <div class="podium-name">{{ user.name }}</div>
+            <div class="podium-score">{{ user.score }}</div>
+            <div class="podium-pillar pillar-second"></div>
+          </div>
+          
+          <!-- First Place -->
+          <div class="podium-position" *ngIf="getFirstPlace() as user">
+            <div class="podium-avatar">
+              <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.name">
+              <div *ngIf="!user.avatar" class="avatar-placeholder">{{ user.name.charAt(0) }}</div>
+            </div>
+            <div class="podium-rank rank-top-1">1</div>
+            <div class="podium-name">{{ user.name }}</div>
+            <div class="podium-score">{{ user.score }}</div>
+            <div class="podium-pillar pillar-first"></div>
+          </div>
+          
+          <!-- Third Place -->
+          <div class="podium-position" *ngIf="getThirdPlace() as user">
+            <div class="podium-avatar">
+              <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.name">
+              <div *ngIf="!user.avatar" class="avatar-placeholder">{{ user.name.charAt(0) }}</div>
+            </div>
+            <div class="podium-rank rank-top-3">3</div>
+            <div class="podium-name">{{ user.name }}</div>
+            <div class="podium-score">{{ user.score }}</div>
+            <div class="podium-pillar pillar-third"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  

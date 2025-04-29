@@ -1,7 +1,7 @@
 <div class="event-management-container">
   <header class="header">
   <h1>Gestion des Événements</h1>
-  <button *ngIf="canAddEvent()" class="add-button" (click)="openAddEventModal()">
+  <button *ngIf="canAddEvent()" class="add-button" (click)="openAddEventModal()" >
     <i class="fas fa-plus"></i> Ajouter un événement
   </button>
 </header>
@@ -10,7 +10,7 @@
     <div class="filter-group">
       <button
         [class.active]="currentFilter === 'all'"
-        (click)="filterEvents('all')"
+        (click)="filterEvents('all')" 
       >
         Tous
       </button>
@@ -67,7 +67,8 @@
           <div class="event-meta">
             <div class="meta-item">
               <i class="fas fa-calendar"></i>
-              <span>{{ event.startDate | date : "dd/MM/yyyy" }}</span>
+              <span>{{ event.startDate | date : "dd/MM/yyyy" }} -{{ event.endDate | date : "dd/MM/yyyy" }}</span>
+
             </div>
             <div class="meta-item">
               <i class="fas fa-clock"></i>
@@ -85,16 +86,6 @@
       </div>
 
       <div class="event-actions">
-       
-        <button 
-        *ngIf="canAssignResponsible() && !event.responsiblePerson" 
-        class="action-button assign" 
-        (click)="openAssignResponsibleModal(event)">
-        Assigner un responsable
-      </button>
-      <button *ngIf="event.responsiblePerson" class="action-button responsible" [disabled]="true">
-        Responsable: {{ event.responsiblePerson.email }}
-      </button>
       <button class="action-button details" (click)="viewEventDetails(event)">
         Voir les détails
       </button>
@@ -230,6 +221,25 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label for="organization">Organisation</label>
+            <input type="text" id="organization" formControlName="organization" placeholder="Nom de l'organisation">
+          </div>
+          <div class="form-group">
+            <label for="vision">Vision</label>
+            <textarea id="vision" formControlName="vision" placeholder="Objectifs de l'événement"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="vision">nombre de participants</label>
+            <input type="text" id="participants" formControlName="participants" placeholder="Nombre de participants">
+          </div>
+  
+          <!-- Section 3: Image -->
+          <div class="form-group">
+            <label for="imageFile">Image (max 5MB)</label>
+            <input type="file" id="imageFile">
+          
+          </div>
           <div class="form-actions">
             <button
               type="button"
@@ -255,77 +265,4 @@
     </div>
   </div>
 
-  <!-- Modal pour assigner un responsable -->
-  <div class="modal" *ngIf="showAssignResponsibleModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Assigner un responsable</h2>
-        <button class="close-button" (click)="closeAssignResponsibleModal()">
-          &times;
-        </button>
-      </div>
-      <div class="modal-body">
-        <form
-          [formGroup]="responsibleForm"
-          (ngSubmit)="submitResponsibleForm()"
-        >
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              formControlName="email"
-              placeholder="Email du responsable"
-            />
-            <div
-              *ngIf="
-                responsibleForm.get('email')?.invalid &&
-                responsibleForm.get('email')?.touched
-              "
-              class="error-message"
-            >
-              Un email valide est requis
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="responsibleDescription">Description</label>
-            <textarea
-              id="responsibleDescription"
-              formControlName="description"
-              placeholder="Description du rôle (optionnel)"
-            ></textarea>
-          </div>
-
-          <div class="form-info">
-            <p>
-              <i class="fas fa-info-circle"></i> Un compte sera créé pour cette
-              personne et les identifiants seront envoyés par email.
-            </p>
-          </div>
-
-          <div class="form-actions">
-            <button
-              type="button"
-              class="cancel-button"
-              (click)="closeAssignResponsibleModal()"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              class="submit-button"
-              [disabled]="responsibleForm.invalid || submitting"
-            >
-              <span *ngIf="!submitting">Assigner</span>
-              <span *ngIf="submitting">
-                <div class="spinner-small"></div>
-                Assignation en cours...
-              </span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 </div>

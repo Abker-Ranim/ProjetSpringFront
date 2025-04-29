@@ -17,16 +17,7 @@ export interface Event {
   startDate: Date;
   endDate: Date;
   createdAt: Date;
-  responsiblePerson?: Manager;
-}
 
-export interface Manager {
-  id: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  description?: string;
-  password?: string; // Temporaire, pour l'envoi par email
 }
 
 @Component({
@@ -50,14 +41,12 @@ export class EventComponent {
 
   // Modals
   showAddEventModal = false;
-  showAssignResponsibleModal = false;
 
   // Search term
   searchTerm: string = '';
 
   // Forms
   eventForm: FormGroup;
-  responsibleForm: FormGroup;
   submitting = false;
 
   // Selected event for assigning responsible
@@ -76,10 +65,6 @@ export class EventComponent {
       
     });
 
-    this.responsibleForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      description: [''],
-    });
   }
 
   ngOnInit(): void {
@@ -136,13 +121,7 @@ export class EventComponent {
         startDate: new Date(2025, 4, 12, 10, 0),
         endDate: new Date(2025, 4, 12, 16, 0),
         createdAt: new Date(2023, 3, 20),
-        responsiblePerson: {
-          id: '101',
-          firstname: 'Expert',
-          lastname: 'IA',
-          email: 'expert@ia.com',
-          description: 'Expert en IA',
-        },
+      
       },
       {
         id: '6',
@@ -234,9 +213,7 @@ export class EventComponent {
     return this.isAdmin();
   }
 
-  canAssignResponsible(): boolean {
-    return this.isAdmin();
-  }
+ 
   // Modal d'ajout d'événement
   openAddEventModal(): void {
     this.eventForm.reset();
@@ -271,74 +248,6 @@ export class EventComponent {
     }, 1500);
   }
 
-  // Modal d'assignation de responsable
-  openAssignResponsibleModal(event: Event): void {
-    this.selectedEvent = event;
-    this.responsibleForm.reset();
-    this.showAssignResponsibleModal = true;
-  }
+  
 
-  closeAssignResponsibleModal(): void {
-    this.showAssignResponsibleModal = false;
-    this.selectedEvent = null;
-  }
-
-  submitResponsibleForm(): void {
-    if (this.responsibleForm.invalid || !this.selectedEvent) return;
-
-    this.submitting = true;
-
-    setTimeout(() => {
-      // Générer un mot de passe aléatoire
-      const password = Math.random().toString(36).slice(-8);
-
-      const responsible: Manager = {
-        id: Date.now().toString(),
-        firstname: 'DefaultFirstName', 
-        lastname: 'DefaultLastName', 
-        email: this.responsibleForm.value.email,
-        description: this.responsibleForm.value.description,
-      };
-
-      const eventIndex = this.events.findIndex(
-        (e) => e.id === this.selectedEvent!.id
-      );
-      if (eventIndex !== -1) {
-        this.events[eventIndex].responsiblePerson = responsible;
-      }
-
-      // Simuler l'envoi d'un email
-      console.log(`
-        Email envoyé à ${responsible.email}:
-        ---
-        Objet: Vous avez été désigné responsable pour l'événement "${
-          this.selectedEvent!.title
-        }"
-        
-        Bonjour,
-        
-        Vous avez été désigné comme responsable pour l'événement "${
-          this.selectedEvent!.title
-        }".
-        
-        Voici vos identifiants de connexion:
-        Email: ${responsible.email}
-        Mot de passe: ${password}
-        
-        Veuillez vous connecter à l'application pour gérer cet événement.
-        
-        Cordialement,
-        L'équipe de gestion d'événements
-        ---
-      `);
-
-      alert(
-        `Un email a été envoyé à ${responsible.email} avec les identifiants de connexion.`
-      );
-
-      this.submitting = false;
-      this.closeAssignResponsibleModal();
-      this.applyFilters();
-    }, 1500);
-  }
 }

@@ -36,7 +36,10 @@ export class AuthService {
   private apiUrl = 'http://localhost:8089/SpringMVC/api/v1/auth';
   private currentUser: User | null = null;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    this.initializeUserFromStorage();
+
+  }
 
   private initializeUserFromStorage(): void {
     const token = localStorage.getItem('auth_token');
@@ -73,11 +76,12 @@ export class AuthService {
         );
 }
 
-  login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${this.apiUrl}/authenticate`, credentials)
-      .pipe(
-        tap((response) => {
+login(credentials: LoginRequest): Observable<AuthResponse> {
+  return this.http
+    .post<AuthResponse>(`${this.apiUrl}/authenticate`, credentials)
+    .pipe(
+      tap({
+        next: (response) => {
           console.log('Réponse reçue:', response);
 
           if (response.access_token) {
@@ -87,11 +91,17 @@ export class AuthService {
               refresh_token: null
             });
           } else {
-            console.error('Token non reçu dans la réponse');
+            console.error('Login error:', 'Token non reçu dans la réponse');
           }
-        })
-      );
-  }
+        },
+        error: (error) => {
+          // Affiche l'erreur en cas de problème
+          console.error('Login error:', error);
+        }
+      })
+    );
+}
+
 
   private storeAuthData(response: AuthResponse): void {
     localStorage.setItem('auth_token', response.access_token);

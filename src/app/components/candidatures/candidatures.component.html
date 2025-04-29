@@ -1,0 +1,126 @@
+<div class="admin-container">
+  <header class="admin-header">
+    <h1>Candidature Management</h1>
+  </header>
+
+  <div class="filters-section" >
+    <div class="search-box">
+      <i class="fas fa-search search-icon"></i>
+      <input
+        type="text"
+        placeholder="Search by name, event..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+      >
+    </div>
+
+    <div class="filter-buttons">
+      <button
+        [class.active]="currentFilter === 'all'"
+        (click)="filterCandidatures('all')"
+      >
+        All
+      </button>
+      <button
+        [class.active]="currentFilter === 'PENDING'"
+        (click)="filterCandidatures('PENDING')"
+      >
+        Pending
+      </button>
+      <button
+        [class.active]="currentFilter === 'ACCEPTED'"
+        (click)="filterCandidatures('ACCEPTED')"
+      >
+        Accepted
+      </button>
+      <button
+        [class.active]="currentFilter === 'REJECTED'"
+        (click)="filterCandidatures('REJECTED')"
+      >
+        Rejected
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading candidatures...</p>
+  </div>
+
+  <div class="candidatures-list" *ngIf="!isLoading">
+    <div *ngIf="filteredCandidates.length === 0" class="no-results">
+      <i class="fas fa-search"></i>
+      <p>No candidatures found</p>
+    </div>
+
+    <div *ngFor="let candidate of filteredCandidates" class="candidature-card">
+      <div class="candidature-header">
+        <div class="candidat-info">
+          <h3>{{ candidate.volunteerName }}</h3>
+          <span class="candidat-email">{{ candidate.volunteerEmail }}</span>
+        </div>
+        <div class="candidature-status">
+          <span class="status-badge" [ngClass]="'status-' + candidate.status.toLowerCase()">
+            {{ getStatusLabel(candidate.status) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="candidature-body">
+        <div class="candidature-details">
+          <div class="detail-item">
+            <span class="detail-label">Event:</span>
+            <span class="detail-value">{{ candidate.eventName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Position:</span>
+            <span class="detail-value">{{ candidate.positionName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Submitted:</span>
+            <span class="detail-value">{{ candidate.submissionDate | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="candidature-actions" *ngIf="isResponsible()">
+        <button
+          *ngIf="candidate.status === 'PENDING'"
+          class="action-button accepter"
+          (click)="acceptCandidate(candidate)"
+        >
+          <i class="fas fa-check"></i> Accept
+        </button>
+        <button
+          *ngIf="candidate.status === 'PENDING'"
+          class="action-button details"
+          (click)="rejectCandidate(candidate)"
+        >
+          <i class="fas fa-times"></i> Reject
+        </button>
+        <button
+          class="action-button details"
+          (click)="goToCandidateDetail(candidate.id)"
+        >
+          <i class="fas fa-eye"></i> View Details
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1 && !isLoading">
+    <button [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <span
+      *ngFor="let page of getPageNumbers()"
+      [class.active]="page === currentPage"
+      (click)="changePage(page)"
+    >
+      {{ page }}
+    </span>
+    <button [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
