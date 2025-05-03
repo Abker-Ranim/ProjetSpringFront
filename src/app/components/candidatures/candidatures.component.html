@@ -90,38 +90,8 @@
         </div>
       </div>
 
-      <div class="candidature-actions" *ngIf="isResponsible()">
-        <div *ngIf="candidate.status === 'PENDING'" class="action-comment">
-          <input
-            type="text"
-            placeholder="Add a comment (optional)"
-            [(ngModel)]="comments[candidate.id]"
-            class="comment-input"
-          />
-        </div>
-        <button
-          *ngIf="candidate.status === 'PENDING'"
-          class="action-button accepter"
-          (click)="acceptCandidate(candidate)"
-        >
-          <i class="fas fa-check"></i> Approve
-        </button>
-        <button
-          *ngIf="candidate.status === 'PENDING'"
-          class="action-button rejeter"
-          (click)="rejectCandidate(candidate)"
-        >
-          <i class="fas fa-times"></i> Reject
-        </button>
-        <button
-          class="action-button details"
-          (click)="goToCandidateDetail(candidate.id)"
-        >
-          <i class="fas fa-eye"></i> View Details
-        </button>
-      </div>
 
-      <div class="candidature-actions" *ngIf="isUserOrVoluntary()">
+      <div class="candidature-actions" *ngIf="isResponsible()">
         <button
           class="action-button details"
           (click)="goToCandidateDetail(candidate.id)"

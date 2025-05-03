@@ -15,7 +15,9 @@
           <div class="task-title">
             <h3>{{ task.title }}</h3>
             <div class="task-meta">
-              <span [class]="'task-status ' + getStatusClass(task.status)">{{ getStatusLabel(task.status) }}</span>
+              <span [class]="'task-status ' + getStatusClass(task.status)">{{
+                getStatusLabel(task.status)
+              }}</span>
             </div>
           </div>
           <div class="task-status-actions">
@@ -41,28 +43,36 @@
 
           <div class="task-details">
             <div *ngIf="task.deadline" class="task-deadline">
-              <i class="fas fa-calendar-alt"></i> Deadline: {{ task.deadline | date:'dd/MM/yyyy' }}
+              <i class="fas fa-calendar-alt"></i> Deadline:
+              {{ task.deadline | date : "dd/MM/yyyy" }}
             </div>
             <div class="task-created">
-              <i class="fas fa-clock"></i> Créée le: {{ task.createdAt | date:'dd/MM/yyyy' }}
+              <i class="fas fa-clock"></i> Créée le:
+              {{ task.createdAt | date : "dd/MM/yyyy" }}
             </div>
             <div *ngIf="task.completedAt" class="task-completed">
-              <i class="fas fa-check-circle"></i> Terminée le: {{ task.completedAt | date:'dd/MM/yyyy' }}
+              <i class="fas fa-check-circle"></i> Terminée le:
+              {{ task.completedAt | date : "dd/MM/yyyy" }}
             </div>
             <div *ngIf="task.note != null" class="task-note">
               <i class="fas fa-star"></i> Note: {{ task.note }}
             </div>
             <div class="task-responsible">
-              <i class="fas fa-user"></i> {{ isResponsible() ? 'Volontaire' : 'Responsable' }}: {{ isResponsible() ? task.volunteerName : task.responsibleName }}
+              <i class="fas fa-user"></i>
+              {{ isResponsible() ? "Volontaire" : "Responsable" }}:
+              {{ isResponsible() ? task.volunteerName : task.responsibleName }}
             </div>
           </div>
 
-          <div *ngIf="task.status === 'Done' && isResponsible()" class="task-rating">
+          <div
+            *ngIf="task.status === 'Done' && isResponsible()"
+            class="task-rating"
+          >
             <h4>Évaluation</h4>
             <div class="rating-field">
               <input
                 type="number"
-                id="note-{{task.id}}"
+                id="note-{{ task.id }}"
                 [(ngModel)]="task.note"
                 placeholder="Entrez une note (0-100)"
                 min="0"
@@ -74,7 +84,12 @@
               <button
                 class="rating-submit-button"
                 (click)="rateTask(task, task.note)"
-                [disabled]="task.note == null || task.note < 0 || task.note > 100 || submitting"
+                [disabled]="
+                  task.note == null ||
+                  task.note < 0 ||
+                  task.note > 100 ||
+                  submitting
+                "
               >
                 <i class="fas fa-check"></i>
                 <span>Valider</span>
@@ -89,7 +104,9 @@
               <div class="comment" *ngFor="let comment of task.comments">
                 <div class="comment-header">
                   <span class="comment-author">{{ comment.userEmail }}</span>
-                  <span class="comment-date">{{ getTimeAgo(comment.createdAt) }}</span>
+                  <span class="comment-date">{{
+                    getTimeAgo(comment.createdAt)
+                  }}</span>
                 </div>
                 <div class="comment-content">
                   {{ comment.content }}
@@ -106,7 +123,7 @@
               <button
                 class="comment-button"
                 (click)="addComment(task)"
-                [disabled]="!newComment[task.id]?.trim() || submitting"
+                [disabled]="!newComment[task.id].trim() || submitting"
               >
                 <i class="fas fa-paper-plane"></i>
               </button>

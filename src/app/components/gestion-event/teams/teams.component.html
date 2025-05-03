@@ -27,6 +27,9 @@
         <div class="team-title">
           <h3>{{ team.name }}</h3>
         </div>
+        <button class="apply-button" (click)="openApplyForm(team)" *ngIf="canApply()">
+          Postuler <i class="fas fa-arrow-right"></i>
+        </button>
       </div>
       <div class="team-body">
         <h4>Description</h4>
@@ -43,7 +46,7 @@
       <button class="close-button" (click)="closeAddForm()">×</button>
     </div>
     <div class="modal-body">
-      <form [formGroup]="addForm" (ngSubmit)="submitApplication()">
+      <form [formGroup]="addForm" (ngSubmit)="submitAddForm()">
         <div class="form-group">
           <label for="name">Nom de l'équipe</label>
           <input type="text" id="name" formControlName="name" placeholder="Nom de l'équipe" />
@@ -77,6 +80,51 @@
             <span *ngIf="submitting">
               <div class="spinner-small"></div>
               Ajout en cours...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="showApplyForm">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Postuler pour: {{ selectedTeam?.name }}</h2>
+      <button class="close-button" (click)="closeApplyForm()">×</button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="applyForm" (ngSubmit)="submitApplyForm()">
+        <div class="form-group">
+          <label for="motivation">Lettre de motivation</label>
+          <textarea 
+            id="motivation" 
+            formControlName="motivation" 
+            placeholder="Pourquoi souhaitez-vous rejoindre cette équipe ?"
+          ></textarea>
+          <div *ngIf="applyForm.get('motivation')?.invalid && applyForm.get('motivation')?.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> Lettre de motivation requise
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="experience">Expérience</label>
+          <textarea 
+            id="experience" 
+            formControlName="experience" 
+            placeholder="Décrivez votre expérience pertinente"
+          ></textarea>
+          <div *ngIf="applyForm.get('experience')?.invalid && applyForm.get('experience')?.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> Expérience requise
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="cancel-button" (click)="closeApplyForm()">Annuler</button>
+          <button type="submit" class="submit-button" [disabled]="applyForm.invalid || submitting">
+            <span *ngIf="!submitting">Envoyer ma candidature</span>
+            <span *ngIf="submitting">
+              <div class="spinner-small"></div>
+              Envoi en cours...
             </span>
           </button>
         </div>

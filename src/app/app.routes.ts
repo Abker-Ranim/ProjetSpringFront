@@ -5,7 +5,6 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AuthGuard } from './services/auth-gard.service';
 import { EventComponent } from './components/event/event.component';
 import { DetailComponent } from './components/gestion-event/detail/detail.component';
-import { PostesComponent } from './components/gestion-event/postes/postes.component';
 import { TeamsComponent } from './components/gestion-event/teams/teams.component';
 import { AcceuilComponent } from './components/acceuil/acceuil.component';
 import { EventDetailComponent } from './components/event-detail/event-detail.component';
@@ -41,7 +40,6 @@ export const routes: Routes = [
         children: [
           { path: '', redirectTo: 'detail', pathMatch: 'full' },
           { path: 'detail', component: DetailComponent },
-          { path: 'postes', component: PostesComponent },
           { path: 'teams', component: TeamsComponent },
         ],
       },
@@ -68,7 +66,6 @@ export const routes: Routes = [
         children: [
           { path: '', redirectTo: 'detail', pathMatch: 'full' },
           { path: 'detail', component: DetailComponent },
-          { path: 'postes', component: PostesComponent },
           { path: 'teams', component: TeamsComponent },
         ],
       },
@@ -95,7 +92,6 @@ export const routes: Routes = [
         children: [
           { path: '', redirectTo: 'detail', pathMatch: 'full' },
           { path: 'detail', component: DetailComponent },
-          { path: 'postes', component: PostesComponent },
           { path: 'teams', component: TeamsComponent },
         ],
       },
@@ -120,7 +116,6 @@ export const routes: Routes = [
         children: [
           { path: '', redirectTo: 'detail', pathMatch: 'full' },
           { path: 'detail', component: DetailComponent },
-          { path: 'postes', component: PostesComponent },
           { path: 'teams', component: TeamsComponent },
         ],
       },

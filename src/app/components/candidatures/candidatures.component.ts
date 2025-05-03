@@ -39,9 +39,7 @@ export class CandidaturesComponent implements OnInit {
     return this.userRole === 'RESPONSIBLE';
   }
 
-  isUserOrVoluntary(): boolean {
-    return this.userRole === 'USER' || this.userRole === 'VOLUNTARY';
-  }
+ 
 
   loadCandidatures(): void {
     this.isLoading = true;
