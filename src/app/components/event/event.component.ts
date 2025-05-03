@@ -9,8 +9,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { EventService } from '../../services/event-service.service';
-import { Event } from '../../services/event-service.service';
+import { EventService, Event } from '../../services/event-service.service';
+
 @Component({
   selector: 'app-event',
   standalone: true,
@@ -203,5 +203,21 @@ export class EventComponent implements OnInit {
         this.submitting = false;
       }
     });
+  }
+
+  deleteEvent(event: Event): void {
+    if (confirm(`Voulez-vous vraiment supprimer l'événement "${event.title}" ?`)) {
+      this.eventService.deleteEvent(event.id).subscribe({
+        next: () => {
+          this.events = this.events.filter(e => e.id !== event.id);
+          this.applyFilters();
+          console.log(`Événement "${event.title}" supprimé avec succès.`);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la suppression de l\'événement:', err);
+          alert('Erreur lors de la suppression de l\'événement.');
+        }
+      });
+    }
   }
 }

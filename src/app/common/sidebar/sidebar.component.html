@@ -34,6 +34,17 @@
       </a>
     </div>
   </div>
+
+  <div class="menu-item"  *ngIf="userRole !== 'ADMIN' && userRole !== 'VOLUNTARY'">
+    <a class="menu-link" routerLink="responsible-candidature" routerLinkActive="menu-link-active">
+      <div class="menu-icon">
+        <i class="fas fa-user-check"></i>
+      </div>
+      <span class="menu-text">my candidatures</span>
+    </a>
+  </div>
+
+
       
   <!-- Category for tasks -->
   <div class="menu-category">

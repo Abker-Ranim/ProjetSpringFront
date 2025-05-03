@@ -14,6 +14,7 @@ import { TasksComponent } from './components/tasks/tasks.component';
 import { MyTasksComponent } from './components/my-tasks/my-tasks.component';
 import { UserLeaderboardComponent } from './components/user-leaderboard/user-leaderboard.component';
 import { AdminCandidaturesComponent } from './components/admin-candidatures/admin-candidatures.component';
+import { ResponsibleCandidatureComponent } from './components/responsible-candidature/responsible-candidature.component';
 export const routes: Routes = [
   {
     path: '',
@@ -75,6 +76,8 @@ export const routes: Routes = [
       { path: 'my-tasks', component: MyTasksComponent },
       { path: 'user-leaderboard', component: UserLeaderboardComponent },
       { path: 'admin-candidatures', component: AdminCandidaturesComponent },
+      { path: 'responsible-candidature', component:  ResponsibleCandidatureComponent },
+
     ],
   },
 
@@ -125,6 +128,8 @@ export const routes: Routes = [
       { path: 'my-tasks', component: MyTasksComponent },
       { path: 'user-leaderboard', component: UserLeaderboardComponent },
       { path: 'admin-candidatures', component: AdminCandidaturesComponent },
+      { path: 'responsible-candidature', component:  ResponsibleCandidatureComponent },
+
     ],
   },
 

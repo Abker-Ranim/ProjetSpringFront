@@ -49,4 +49,14 @@ export class EventService {
 
     return this.http.post<Event>(`${this.apiUrl}/create`, formData, { headers: this.getHeaders() });
   }
+
+
+  deleteEvent(eventId: number): Observable<void> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      // Add authentication token if needed
+      // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+    });
+    return this.http.delete<void>(`${this.apiUrl}/${eventId}`, { headers });
+  }
 }

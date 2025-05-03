@@ -51,23 +51,7 @@ export class EventDetailComponent implements OnInit {
     });
   }
 
-  getImageUrl(imagePath: string): string {
-    if (!imagePath) return '';
-    // Normaliser les barres obliques
-    const normalizedPath = imagePath.replace(/\\/g, '/');
-    // Extraire uniquement le nom du fichier
-    const fileName = normalizedPath.split('/').pop() || '';
-    // Construire l'URL correcte pointant vers le backend
-    const imageUrl = `http://localhost:8089/images/${fileName}`;
-    console.log('Generated image URL:', imageUrl);
-    return imageUrl;
-  }
 
-  onImageError(errorEvent: ErrorEvent): void {
-    const target = errorEvent.target as HTMLImageElement;
-    console.error('Failed to load image:', target.src);
-    target.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
-  }
 
   isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'ADMIN';
