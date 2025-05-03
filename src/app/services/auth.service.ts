@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
@@ -133,11 +133,7 @@ login(credentials: LoginRequest): Observable<AuthResponse> {
     return localStorage.getItem('userRole');
   }
 
-  logout(): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('userRole');
-    this.router.navigate(['/login']);
-  }
+
   clearAuthData(): void {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('refresh_token');
@@ -154,5 +150,30 @@ login(credentials: LoginRequest): Observable<AuthResponse> {
 
   isVOLUNTARY(): boolean {
     return this.getRole()?.toUpperCase() === 'VOLUNTARY';
+  }
+  logout(): Observable<string> {
+    const token = this.getToken();
+    if (!token) {
+      console.warn('No token found, clearing local storage');
+      localStorage.clear();
+      return new Observable((observer) => {
+        observer.next('Successfully logged out');
+        observer.complete();
+      });
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.post<string>(`${this.apiUrl}/logout`, {}, { headers }).pipe(
+      tap(() => {
+        console.log('Logout request successful, clearing local storage');
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userId');
+      })
+    );
   }
 }

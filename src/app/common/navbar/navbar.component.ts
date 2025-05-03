@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router'; // Importez Router pour la redirection
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,14 +11,23 @@ import { Router } from '@angular/router'; // Importez Router pour la redirection
   imports: [CommonModule],
 })
 export class NavbarComponent implements OnInit {
-  fullName: any = localStorage.getItem('userName');
+  fullName: string | null = localStorage.getItem('userName');
 
- // constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {}
 
-  // Méthode pour déconnecter l'utilisateur
   logout(): void {
-   // this.authService.logout(); // Appelez la méthode logout du service
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log('Successfully logged out');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Logout failed:', err);
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      }
+    });
   }
 }

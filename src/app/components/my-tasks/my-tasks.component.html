@@ -46,14 +46,7 @@
               <i class="fas fa-calendar-alt"></i> Deadline:
               {{ task.deadline | date : "dd/MM/yyyy" }}
             </div>
-            <div class="task-created">
-              <i class="fas fa-clock"></i> Créée le:
-              {{ task.createdAt | date : "dd/MM/yyyy" }}
-            </div>
-            <div *ngIf="task.completedAt" class="task-completed">
-              <i class="fas fa-check-circle"></i> Terminée le:
-              {{ task.completedAt | date : "dd/MM/yyyy" }}
-            </div>
+      
             <div *ngIf="task.note != null" class="task-note">
               <i class="fas fa-star"></i> Note: {{ task.note }}
             </div>
