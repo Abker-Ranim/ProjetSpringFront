@@ -1,46 +1,41 @@
 <div *ngIf="isLoading" class="loading">
-    <p>Chargement des informations...</p>
-  </div>
-  
-  <div *ngIf="!isLoading && candidateDetails" class="candidate-details">
-    <div class="candidate-header">
-      <div class="profile-picture">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuCJctQuqYTV1r-z7QUZMHq6C5nFr0xlKThA&s" alt="Photo de Profil" />
-      </div>
-      <div class="candidate-info">
-        <h2>{{ candidateDetails.name }}</h2>
-      </div>
+  <p>Chargement des informations...</p>
+</div>
+
+<div *ngIf="!isLoading && candidateDetails" class="candidate-details">
+  <div class="candidate-header">
+    <div class="profile-picture">
+      <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuCJctQuqYTV1r-z7QUZMHq6C5nFr0xlKThA&s"
+        alt="Photo de Profil"
+      />
     </div>
-  
-    <div class="candidate-card">
-      <div class="card-section">
-        <div class="section-title">Informations Personnelles</div>
-        <div class="info-item">
-          <label>Email :</label>
-          <p>{{ candidateDetails.email }}</p>
-        </div>
-      
-        <div class="info-item">
-          <label>Motivation :</label>
-          <p>{{ candidateDetails.motivation }}</p>
-        </div>
-      </div>
-  
-      <div class="card-section">
-        <div class="section-title">Expérience</div>
-        <div class="info-item">
-          <label>Expérience :</label>
-          <p>{{ candidateDetails.experience }}</p>
-        </div>
-      </div>
-  
-      <div *ngIf="candidateDetails.cvUrl" class="cv-section">
-        <a [href]="candidateDetails.cvUrl" target="_blank" class="cv-link-btn">Télécharger le CV</a>
-      </div>
-    </div>
-  
-    <div class="action-buttons" *ngIf="candidateDetails.status === 'PENDING'">
-      <button class="accept-btn" (click)="updateStatus('ACCEPTED')">Accepter</button>
-      <button class="decline-btn" (click)="updateStatus('REJECTED')">Refuser</button>
+    <div class="candidate-info">
+      <h2>{{ candidateDetails.name }}</h2>
     </div>
   </div>
+
+  <div class="candidate-card">
+    <div class="card-section">
+      <div class="section-title">Informations Personnelles</div>
+      <div class="info-item">
+        <label>Email :</label>
+        <p>{{ candidateDetails.email }}</p>
+      </div>
+      <div class="info-item">
+        <label>Motivation :</label>
+        <p>{{ candidateDetails.motivation }}</p>
+      </div>
+    </div>
+
+
+    <div *ngIf="candidateDetails.cvUrl" class="cv-section">
+      <a [href]="candidateDetails.cvUrl" target="_blank" class="cv-link-btn">Télécharger le CV</a>
+    </div>
+  </div>
+
+  <div class="action-buttons" *ngIf="candidateDetails.status === 'PENDING'">
+    <button class="accept-btn" (click)="updateStatus('APPROVED')">Accepter</button>
+    <button class="decline-btn" (click)="updateStatus('REJECTED')">Refuser</button>
+  </div>
+</div>

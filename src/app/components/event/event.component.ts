@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -9,50 +9,35 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-export interface Event {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  startDate: Date;
-  endDate: Date;
-  createdAt: Date;
-
-}
-
+import { EventService } from '../../services/event-service.service';
+import { Event } from '../../services/event-service.service';
 @Component({
   selector: 'app-event',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './event.component.html',
-  styleUrl: './event.component.css',
+  styleUrls: ['./event.component.css'],
 })
-export class EventComponent {
+export class EventComponent implements OnInit {
   currentUser: any;
   events: Event[] = [];
   filteredEvents: Event[] = [];
   loading = true;
   currentFilter = 'all';
-
-  // Pagination
   itemsPerPage = 5;
   currentPage = 1;
   totalPages = 1;
-
-  // Modals
   showAddEventModal = false;
-
-  // Search term
   searchTerm: string = '';
-
-  // Forms
   eventForm: FormGroup;
   submitting = false;
+  imageFile: File | null = null;
 
-  // Selected event for assigning responsible
-  selectedEvent: Event | null = null;
-
-  constructor(private formBuilder: FormBuilder, private router: Router,    private authService: AuthService
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private authService: AuthService,
+    private eventService: EventService
   ) {
     this.currentUser = this.authService.getCurrentUser();
     this.eventForm = this.formBuilder.group({
@@ -61,93 +46,47 @@ export class EventComponent {
       location: ['', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      imageUrl: [''],
-      
+      organization: ['', Validators.required],
+      vision: ['', Validators.required],
+      participants: ['', [Validators.required, Validators.min(1)]],
+      imageFile: [null]
     });
-
   }
 
   ngOnInit(): void {
-    // Simuler un chargement
-    setTimeout(() => {
-      this.loadMockEvents();
-      this.loading = false;
-    }, 1000);
+    this.loadEvents();
   }
 
-  loadMockEvents(): void {
-    this.events = [
-      {
-        id: '1',
-        title: "Form d'entreprise",
-        description: "Formation sur la création d'entreprise",
-        location: 'UTICA',
-        startDate: new Date(2023, 5, 15, 9, 0),
-        endDate: new Date(2023, 5, 15, 17, 0),
-        createdAt: new Date(2023, 5, 1),
+  loadEvents(): void {
+    this.loading = true;
+    this.eventService.getEvents().subscribe({
+      next: (events) => {
+        console.log('Events loaded:', events);
+        this.events = events.map(event => ({
+          ...event,
+          startDate: new Date(event.startDate),
+          endDate: new Date(event.endDate),
+          createdAt: event.createdAt ? new Date(event.createdAt) : new Date()
+        }));
+        this.applyFilters();
+        this.loading = false;
       },
-      {
-        id: '2',
-        title: 'Stages et PFE',
-        description: "Journée d'information sur les stages et PFE",
-        location: 'UTICA',
-        startDate: new Date(2023, 6, 20, 10, 0),
-        endDate: new Date(2023, 6, 20, 16, 0),
-        createdAt: new Date(2023, 6, 5),
-      },
-      {
-        id: '3',
-        title: 'Journée de recrutement',
-        description: 'Rencontre avec les entreprises qui recrutent',
-        location: 'Centre de conférences',
-        startDate: new Date(2023, 7, 10, 9, 0),
-        endDate: new Date(2023, 7, 10, 18, 0),
-        createdAt: new Date(2023, 7, 1),
-      },
-      {
-        id: '4',
-        title: 'Atelier de développement web',
-        description: 'Apprendre les bases du développement web',
-        location: 'Salle de formation',
-        startDate: new Date(2025, 3, 5, 9, 0),
-        endDate: new Date(2025, 3, 5, 17, 0),
-        createdAt: new Date(2023, 2, 15),
-      },
-      {
-        id: '5',
-        title: "Conférence sur l'IA",
-        description: 'Les dernières avancées en intelligence artificielle',
-        location: 'Centre de conférences',
-        startDate: new Date(2025, 4, 12, 10, 0),
-        endDate: new Date(2025, 4, 12, 16, 0),
-        createdAt: new Date(2023, 3, 20),
-      
-      },
-      {
-        id: '6',
-        title: 'Hackathon innovation',
-        description: '48h pour développer un projet innovant',
-        location: 'UTICA',
-        startDate: new Date(2025, 5, 15, 9, 0),
-        endDate: new Date(2025, 5, 17, 18, 0),
-        createdAt: new Date(2023, 4, 10),
-      },
-    ];
-
-    this.applyFilters();
+      error: (err) => {
+        console.error('Error loading events:', err);
+        this.loading = false;
+      }
+    });
   }
 
   applyFilters(): void {
     let filtered = [...this.events];
 
-    // Apply status filter
     if (this.currentFilter === 'upcoming') {
       filtered = filtered.filter((event) => this.isUpcoming(event));
     } else if (this.currentFilter === 'past') {
       filtered = filtered.filter((event) => !this.isUpcoming(event));
     }
 
-    // Apply search filter
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase().trim();
       filtered = filtered.filter(
@@ -158,19 +97,17 @@ export class EventComponent {
       );
     }
 
-    // Sort by date (newest first)
-    filtered.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    filtered.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
 
-    // Calculate total pages
     this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
     if (this.currentPage > this.totalPages) {
       this.currentPage = this.totalPages || 1;
     }
 
-    // Apply pagination
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     this.filteredEvents = filtered.slice(startIndex, endIndex);
@@ -202,9 +139,11 @@ export class EventComponent {
   }
 
   viewEventDetails(event: Event): void {
-    const route = this.isAdmin() ? 'admin/events' : 'voluntary/events';
-    this.router.navigate([route, event.id]);
+    const role = this.authService.getRole()?.toLowerCase() || 'user';
+    const route = `${role}/events`;
+    this.router.navigate([route, event.id, 'detail']);
   }
+
   isAdmin(): boolean {
     return this.authService.isAdmin();
   }
@@ -213,10 +152,9 @@ export class EventComponent {
     return this.isAdmin();
   }
 
- 
-  // Modal d'ajout d'événement
   openAddEventModal(): void {
     this.eventForm.reset();
+    this.imageFile = null;
     this.showAddEventModal = true;
   }
 
@@ -224,30 +162,46 @@ export class EventComponent {
     this.showAddEventModal = false;
   }
 
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (file && file.size <= 5 * 1024 * 1024) { // 5MB max
+      this.imageFile = file;
+    } else {
+      alert('L\'image doit être inférieure à 5MB.');
+    }
+  }
+
   submitEventForm(): void {
     if (this.eventForm.invalid) return;
 
     this.submitting = true;
 
-    // Simuler un délai de traitement
-    setTimeout(() => {
-      const newEvent: Event = {
-        id: (this.events.length + 1).toString(),
-        title: this.eventForm.value.title,
-        description: this.eventForm.value.description,
-        location: this.eventForm.value.location,
-        startDate: new Date(this.eventForm.value.startDate),
-        endDate: new Date(this.eventForm.value.endDate),
-        createdAt: new Date(),
-      };
+    const newEvent: Event = {
+      id: 0,
+      title: this.eventForm.value.title,
+      description: this.eventForm.value.description,
+      location: this.eventForm.value.location,
+      startDate: new Date(this.eventForm.value.startDate),
+      endDate: new Date(this.eventForm.value.endDate),
+      createdAt: new Date(),
+      organization: this.eventForm.value.organization,
+      vision: this.eventForm.value.vision,
+      participants: Number(this.eventForm.value.participants),
+      imagePath: undefined // Pas nécessaire ici, géré par l'API
+    };
 
-      this.events.unshift(newEvent);
-      this.submitting = false;
-      this.closeAddEventModal();
-      this.applyFilters();
-    }, 1500);
+    this.eventService.createEvent(newEvent, this.imageFile || undefined).subscribe({
+      next: (event) => {
+        console.log('Event created:', event);
+        this.loadEvents();
+        this.submitting = false;
+        this.closeAddEventModal();
+      },
+      error: (err) => {
+        console.error('Error creating event:', err);
+        alert('Erreur lors de la création de l\'événement.');
+        this.submitting = false;
+      }
+    });
   }
-
-  
-
 }

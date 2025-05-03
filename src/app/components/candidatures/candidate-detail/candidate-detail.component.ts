@@ -1,17 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
-interface Candidate {
-  id: string;
-  name: string;
-  email: string;
-  motivation: string;
-  experience: string;
-  cvUrl: string;
-  eventName: string;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
-}
+import { CandidatureService, Candidate } from '../../../services/candidature.service';
 
 @Component({
   selector: 'app-candidate-detail',
@@ -25,55 +15,46 @@ export class CandidateDetailComponent implements OnInit {
   candidateDetails: Candidate | null = null;
   isLoading = true;
 
-  // Données statiques pour les détails des candidats
-  private candidates: Candidate[] = [
-    {
-      id: '1',
-      name: 'Jean Dupont',
-      email: 'jean.dupont@example.com',
-      motivation: 'Je suis motivé pour organiser cet événement et apporter mes compétences en logistique.',
-      experience: '5 ans en gestion d’événements',
-      cvUrl: 'https://example.com/jean-dupont-cv.pdf',
-      eventName: 'Tech Conference 2025',
-      status: 'PENDING',
-    },
-    {
-      id: '2',
-      name: 'Marie Curie',
-      email: 'marie.curie@example.com',
-      motivation: 'Passionnée par la communication, je veux promouvoir cet événement.',
-      experience: '3 ans en communication événementielle',
-      cvUrl: 'https://example.com/marie-curie-cv.pdf',
-      eventName: 'Charity Run',
-      status: 'ACCEPTED',
-    },
-  ];
-
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private candidatureService: CandidatureService
+  ) {}
 
   ngOnInit(): void {
-    console.log('CandidateDetailComponent initialized'); // Debug
+    console.log('CandidateDetailComponent initialized');
     this.candidateId = this.route.snapshot.paramMap.get('id');
-    console.log('Candidate ID received:', this.candidateId); // Debug
+    console.log('Candidate ID received:', this.candidateId);
+
     if (this.candidateId) {
-      setTimeout(() => {
-        this.candidateDetails = this.candidates.find((c) => c.id === this.candidateId) || null;
-        console.log('Candidate Details:', this.candidateDetails); // Debug
-        if (!this.candidateDetails) {
-          console.warn(`No candidate found for ID: ${this.candidateId}`);
-        }
-        this.isLoading = false;
-      }, 1000);
+      this.candidatureService.getCandidateById(this.candidateId).subscribe({
+        next: (candidate) => {
+          this.candidateDetails = candidate;
+          console.log('Candidate Details:', this.candidateDetails);
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error fetching candidate details:', error);
+          this.isLoading = false;
+        },
+      });
     } else {
       console.error('No candidate ID provided');
       this.isLoading = false;
     }
   }
 
-  updateStatus(status: 'ACCEPTED' | 'REJECTED'): void {
-    if (this.candidateDetails) {
-      this.candidateDetails.status = status;
-      alert(`Candidature ${status === 'ACCEPTED' ? 'acceptée' : 'rejetée'} avec succès !`);
+  updateStatus(status: 'APPROVED' | 'REJECTED'): void {
+    if (this.candidateDetails && this.candidateId) {
+      this.candidatureService.updateCandidateStatus(this.candidateId, status).subscribe({
+        next: () => {
+          this.candidateDetails!.status = status;
+          alert(`Candidature ${status === 'APPROVED' ? 'acceptée' : 'rejetée'} avec succès !`);
+        },
+        error: (error) => {
+          console.error('Error updating status:', error);
+          alert('Échec de la mise à jour du statut');
+        },
+      });
     }
   }
 }

@@ -8,23 +8,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { DataService } from '../../services/data.service';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: 'toDo' | 'inProgress' | 'done';
-  deadline?: string;
-  createdBy: string;
-  createdAt: string;
-  teamId?: string;
-}
-
-interface Team {
-  id: string;
-  name: string;
-}
+import { TaskService, Task, Team } from '../../services/task.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-tasks',
@@ -35,10 +20,7 @@ interface Team {
 })
 export class TasksComponent implements OnInit {
   tasks: Task[] = [];
-  teams: Team[] = [
-    { id: '1', name: 'Web Team' },
-    { id: '2', name: 'Technical Team' },
-  ];
+  teams: Team[] = [];
   displayedTasks: Task[] = [];
   tasksPerPage = 5;
   currentTaskIndex = 0;
@@ -47,44 +29,71 @@ export class TasksComponent implements OnInit {
   selectedTask: Task | null = null;
   addTaskForm: FormGroup;
   applyForm: FormGroup;
+  selectedFile: File | null = null;
   submitting = false;
   userRole = '';
-  userName = 'User Test';
-  userId = 'user123';
-  userEmail = 'john.doe@example.com'; // Mocked, replace with auth service
-  selectedFile: File | null = null;
-  fileUrl: string | null = null;
+  userEmail = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private dataService: DataService
+    private taskService: TaskService,
+    private authService: AuthService
   ) {
     this.addTaskForm = this.formBuilder.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
-      deadline: [''],
       teamId: [''],
+      eventId: ['']
     });
 
     this.applyForm = this.formBuilder.group({
       motivation: ['', Validators.required],
       experience: ['', Validators.required],
-      cv: [''],
+      cv: ['']
     });
   }
 
   ngOnInit(): void {
-    this.userRole = localStorage.getItem('userRole') || 'VOLUNTARY';
-    this.userEmail =
-      localStorage.getItem('userEmail') || 'john.doe@example.com';
-    this.dataService.getTasks().subscribe((tasks) => {
-      this.tasks = tasks;
-      this.updateDisplayedTasks();
+    this.userRole = localStorage.getItem('userRole') || '';
+    this.userEmail = localStorage.getItem('userEmail') || '';
+
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.loadTasks();
+    this.loadTeams();
+  }
+
+  loadTasks(): void {
+    const loadMethod = this.isResponsible()
+      ? this.taskService.getTasksByResponsible()
+      : this.taskService.getAllTasks();
+
+    loadMethod.subscribe({
+      next: (tasks) => {
+        this.tasks = tasks;
+        this.updateDisplayedTasks();
+      },
+      error: (err) => {
+        console.error('Error loading tasks:', err);
+        alert('Failed to load tasks');
+      }
     });
-    this.route.queryParams.subscribe((params) => {
-      this.showAddTaskForm = params['addTask'] === 'true';
+  }
+
+  loadTeams(): void {
+    this.taskService.getAllTeams().subscribe({
+      next: (teams) => {
+        this.teams = teams;
+      },
+      error: (err) => {
+        console.error('Error loading teams:', err);
+        this.teams = [];
+      }
     });
   }
 
@@ -109,7 +118,7 @@ export class TasksComponent implements OnInit {
   }
 
   canApply(): boolean {
-    return this.userRole === 'VOLUNTARY';
+    return this.userRole === 'USER' || this.userRole === 'VOLUNTARY';
   }
 
   isAdmin(): boolean {
@@ -120,31 +129,7 @@ export class TasksComponent implements OnInit {
     return this.userRole === 'RESPONSIBLE';
   }
 
-  getStatusLabel(status: string): string {
-    switch (status) {
-      case 'toDo':
-        return 'To Do';
-      case 'inProgress':
-        return 'In Progress';
-      case 'done':
-        return 'Done';
-      default:
-        return status;
-    }
-  }
-
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'toDo':
-        return 'status-todo';
-      case 'inProgress':
-        return 'status-in-progress';
-      case 'done':
-        return 'status-completed';
-      default:
-        return '';
-    }
-  }
+ 
 
   openApplyForm(task: Task): void {
     this.selectedTask = task;
@@ -154,93 +139,76 @@ export class TasksComponent implements OnInit {
   closeApplyForm(): void {
     this.showApplyForm = false;
     this.selectedTask = null;
-    this.applyForm.reset();
     this.selectedFile = null;
-    this.fileUrl = null;
+    this.applyForm.reset();
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
-      this.fileUrl = URL.createObjectURL(this.selectedFile);
     }
   }
 
   removeFile(): void {
     this.selectedFile = null;
-    if (this.fileUrl) {
-      URL.revokeObjectURL(this.fileUrl);
-      this.fileUrl = null;
-    }
   }
 
   submitApplication(): void {
     if (this.applyForm.invalid || !this.selectedTask) return;
     this.submitting = true;
 
-    const candidature = {
-      id: Date.now().toString(),
-      eventName: this.dataService.getTeamEventName(this.selectedTask.teamId),
-      positionName: this.selectedTask.title,
-      volunteerName: this.userName,
-      volunteerEmail: this.userEmail,
-      status: 'PENDING' as 'PENDING',
-      submissionDate: new Date().toISOString().split('T')[0],
-      taskId: this.selectedTask.id,
-    };
-
-    this.dataService.addCandidate(candidature);
-    setTimeout(() => {
-      alert('Your application has been submitted successfully!');
-      this.submitting = false;
-      this.closeApplyForm();
-    }, 1000);
+    const description = `${this.applyForm.value.motivation}\n\nExperience:\n${this.applyForm.value.experience}`;
+    this.taskService.applyForVolunteer(this.selectedTask.id, description, this.selectedFile).subscribe({
+      next: (response) => {
+        alert('Application submitted successfully! Waiting for review.');
+        this.submitting = false;
+        this.closeApplyForm();
+      },
+      error: (err) => {
+        alert(err.message || 'Error submitting application');
+        this.submitting = false;
+      }
+    });
   }
 
   openAddTaskForm(): void {
     this.showAddTaskForm = true;
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { addTask: 'true' },
-      queryParamsHandling: 'merge',
-    });
   }
 
   closeAddTaskForm(): void {
     this.showAddTaskForm = false;
     this.addTaskForm.reset();
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { addTask: null },
-      queryParamsHandling: 'merge',
-    });
   }
 
   submitTask(): void {
     if (this.addTaskForm.invalid) return;
     this.submitting = true;
 
-    const taskData: Task = {
-      id: Date.now().toString(),
+    const taskData = {
       title: this.addTaskForm.value.title,
       description: this.addTaskForm.value.description,
-      status: 'toDo',
-      deadline: this.addTaskForm.value.deadline,
-      teamId: this.addTaskForm.value.teamId || undefined,
-      createdBy: this.userId,
-      createdAt: new Date().toISOString(),
+      teamId: this.addTaskForm.value.teamId ? Number(this.addTaskForm.value.teamId) : null,
+      eventId: this.addTaskForm.value.eventId ? Number(this.addTaskForm.value.eventId) : null,
+      status: 'ToDo'
     };
 
-    this.dataService.addTask(taskData);
-    setTimeout(() => {
-      this.submitting = false;
-      this.closeAddTaskForm();
-      alert('Task added successfully!');
-    }, 1000);
+    this.taskService.createTask(taskData).subscribe({
+      next: (response) => {
+        this.tasks.push(response);
+        this.updateDisplayedTasks();
+        this.submitting = false;
+        this.closeAddTaskForm();
+        alert('Task created successfully!');
+      },
+      error: (err) => {
+        alert('Error creating task: ' + (err.message || 'Please try again'));
+        this.submitting = false;
+      }
+    });
   }
 
-  getTeamName(teamId: string | undefined): string {
-    return this.dataService.getTeamName(teamId);
+  getTeamName(teamId: number | undefined): string {
+    return this.teams.find((t) => t.id === teamId)?.name || 'No team';
   }
 }

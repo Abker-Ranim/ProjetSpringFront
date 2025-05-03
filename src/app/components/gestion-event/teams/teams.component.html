@@ -8,12 +8,17 @@
     </button>
   </div>
 
-  <div *ngIf="teams.length === 0" class="no-teams">
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement des équipes...</p>
+  </div>
+
+  <div *ngIf="!loading && teams.length === 0" class="no-teams">
     <i class="fas fa-info-circle"></i>
     <p>Aucune équipe trouvée</p>
   </div>
   
-  <div class="teams-grid">
+  <div *ngIf="!loading" class="teams-grid">
     <div class="team-card" *ngFor="let team of teams">
       <div class="team-header">
         <div class="team-icon">
@@ -35,7 +40,7 @@
   <div class="modal-content">
     <div class="modal-header">
       <h2>Ajouter une équipe</h2>
-      <button class="close-button" (click)="closeAddForm()">&times;</button>
+      <button class="close-button" (click)="closeAddForm()">×</button>
     </div>
     <div class="modal-body">
       <form [formGroup]="addForm" (ngSubmit)="submitApplication()">

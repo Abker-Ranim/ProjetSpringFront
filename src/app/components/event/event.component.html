@@ -1,16 +1,16 @@
 <div class="event-management-container">
   <header class="header">
-  <h1>Gestion des Événements</h1>
-  <button *ngIf="canAddEvent()" class="add-button" (click)="openAddEventModal()" >
-    <i class="fas fa-plus"></i> Ajouter un événement
-  </button>
-</header>
+    <h1>Gestion des Événements</h1>
+    <button *ngIf="canAddEvent()" class="add-button" (click)="openAddEventModal()">
+      <i class="fas fa-plus"></i> Ajouter un événement
+    </button>
+  </header>
 
   <div class="filters">
     <div class="filter-group">
       <button
         [class.active]="currentFilter === 'all'"
-        (click)="filterEvents('all')" 
+        (click)="filterEvents('all')"
       >
         Tous
       </button>
@@ -67,15 +67,11 @@
           <div class="event-meta">
             <div class="meta-item">
               <i class="fas fa-calendar"></i>
-              <span>{{ event.startDate | date : "dd/MM/yyyy" }} -{{ event.endDate | date : "dd/MM/yyyy" }}</span>
-
+              <span>{{ event.startDate | date : "dd/MM/yyyy" }} - {{ event.endDate | date : "dd/MM/yyyy" }}</span>
             </div>
             <div class="meta-item">
               <i class="fas fa-clock"></i>
-              <span
-                >{{ event.startDate | date : "HH:mm" }} -
-                {{ event.endDate | date : "HH:mm" }}</span
-              >
+              <span>{{ event.startDate | date : "HH:mm" }} - {{ event.endDate | date : "HH:mm" }}</span>
             </div>
             <div class="meta-item">
               <i class="fas fa-map-marker-alt"></i>
@@ -86,9 +82,9 @@
       </div>
 
       <div class="event-actions">
-      <button class="action-button details" (click)="viewEventDetails(event)">
-        Voir les détails
-      </button>
+        <button class="action-button details" (click)="viewEventDetails(event)">
+          Voir les détails
+        </button>
       </div>
     </div>
 
@@ -121,7 +117,7 @@
       <div class="modal-header">
         <h2>Ajouter un événement</h2>
         <button class="close-button" (click)="closeAddEventModal()">
-          &times;
+          ×
         </button>
       </div>
       <div class="modal-body">
@@ -153,7 +149,6 @@
               formControlName="location"
               placeholder="Sélectionnez un lieu"
             />
-
             <div
               *ngIf="
                 eventForm.get('location')?.invalid &&
@@ -223,23 +218,70 @@
 
           <div class="form-group">
             <label for="organization">Organisation</label>
-            <input type="text" id="organization" formControlName="organization" placeholder="Nom de l'organisation">
+            <input
+              type="text"
+              id="organization"
+              formControlName="organization"
+              placeholder="Nom de l'organisation"
+            />
+            <div
+              *ngIf="
+                eventForm.get('organization')?.invalid &&
+                eventForm.get('organization')?.touched
+              "
+              class="error-message"
+            >
+              L'organisation est requise
+            </div>
           </div>
+
           <div class="form-group">
             <label for="vision">Vision</label>
-            <textarea id="vision" formControlName="vision" placeholder="Objectifs de l'événement"></textarea>
+            <textarea
+              id="vision"
+              formControlName="vision"
+              placeholder="Objectifs de l'événement"
+            ></textarea>
+            <div
+              *ngIf="
+                eventForm.get('vision')?.invalid &&
+                eventForm.get('vision')?.touched
+              "
+              class="error-message"
+            >
+              La vision est requise
+            </div>
           </div>
+
           <div class="form-group">
-            <label for="vision">nombre de participants</label>
-            <input type="text" id="participants" formControlName="participants" placeholder="Nombre de participants">
+            <label for="participants">Nombre de participants</label>
+            <input
+              type="number"
+              id="participants"
+              formControlName="participants"
+              placeholder="Nombre de participants"
+            />
+            <div
+              *ngIf="
+                eventForm.get('participants')?.invalid &&
+                eventForm.get('participants')?.touched
+              "
+              class="error-message"
+            >
+              Le nombre de participants est requis et doit être supérieur à 0
+            </div>
           </div>
-  
-          <!-- Section 3: Image -->
+
           <div class="form-group">
             <label for="imageFile">Image (max 5MB)</label>
-            <input type="file" id="imageFile">
-          
+            <input
+              type="file"
+              id="imageFile"
+              accept="image/*"
+              (change)="onFileChange($event)"
+            />
           </div>
+
           <div class="form-actions">
             <button
               type="button"
@@ -264,5 +306,4 @@
       </div>
     </div>
   </div>
-
 </div>

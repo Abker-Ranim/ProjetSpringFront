@@ -1,31 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: 'toDo' | 'inProgress' | 'done';
-  deadline?: string;
-  assignedTo: string;
-  assignedToName: string;
-  createdBy: string;
-  createdAt: string;
-  teamId?: string;
-  completedAt?: string;
-  note?: number;
-  comments: TaskComment[];
-}
-
-interface TaskComment {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  createdAt: string;
-}
+import { TaskService, Task, TaskComment } from '../../services/task.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-my-tasks',
@@ -35,109 +13,63 @@ interface TaskComment {
   styleUrls: ['./my-tasks.component.css'],
 })
 export class MyTasksComponent implements OnInit {
-  myTasks: Task[] = [
-    {
-      id: '1',
-      title: 'Créer une page d\'accueil',
-      description: 'Concevoir et développer la page d\'accueil du site web de l\'événement.',
-      status: 'toDo',
-      deadline: '2025-06-15',
-      assignedTo: 'user123',
-      assignedToName: 'User Test',
-      createdBy: 'admin',
-      createdAt: '2025-05-01',
-      teamId: '1',
-      comments: [
-        {
-          id: '1',
-          userId: 'admin',
-          userName: 'Admin User',
-          content: 'Comment avance le développement de la page d\'accueil?',
-          createdAt: '2025-05-05T10:30:00',
-        },
-        
-      ],
-    },
-    {
-      id: '2',
-      title: 'Créer les maquettes UI',
-      description: 'Concevoir les maquettes UI pour l\'application mobile.',
-      status: 'inProgress',
-      deadline: '2025-05-20',
-      assignedTo: 'user123',
-      assignedToName: 'User Test',
-      createdBy: 'admin',
-      createdAt: '2025-05-01',
-      comments: [
-        {
-          id: '1',
-          userId: 'admin',
-          userName: 'Admin User',
-          content: 'As-tu commencé à travailler sur les maquettes?',
-          createdAt: '2025-05-02T10:30:00',
-        },
-       
-      ],
-    },
-    {
-      id: '3',
-      title: 'Intégrer l\'API de paiement',
-      description: 'Intégrer l\'API Stripe pour le système de paiement des billets.',
-      status: 'done',
-      deadline: '2025-05-10',
-      assignedTo: 'user123',
-      assignedToName: 'User Test',
-      createdBy: 'admin',
-      createdAt: '2025-04-20',
-      completedAt: '2025-05-08',
-      note: 4,
-      comments: [
-        {
-          id: '1',
-          userId: 'admin',
-          userName: 'Admin User',
-          content: 'Cette tâche est prioritaire pour le lancement du site.',
-          createdAt: '2025-04-20T10:30:00',
-        },
-        {
-          id: '2',
-          userId: 'user123',
-          userName: 'User Test',
-          content: 'J\'ai commencé l\'intégration. J\'ai quelques questions sur les clés API.',
-          createdAt: '2025-04-22T11:45:00',
-        },
-       
- 
-      ],
-    },
-  ];
-
-  commentForms: { [key: string]: FormGroup } = {};
+  myTasks: Task[] = [];
   newComment: { [key: string]: string } = {};
   submitting = false;
   userRole = '';
-  userName = 'User Test'; // Normalement récupéré depuis le service d'authentification
-  userId = 'user123'; // Normalement récupéré depuis le service d'authentification
+  userName = '';
+  userId = '';
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private taskService: TaskService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    // Get user role from localStorage
-    this.userRole = localStorage.getItem('userRole') || 'VOLUNTARY';
+    this.userRole = localStorage.getItem('userRole') || '';
+    this.userName = localStorage.getItem('userName') || 'User';
+    this.userId = localStorage.getItem('userId') || '';
+    console.log('User context:', { userId: this.userId, userRole: this.userRole, userName: this.userName });
 
-    // Initialize comment forms for each task
-    this.myTasks.forEach((task) => {
-      this.newComment[task.id] = '';
+    this.loadTasks();
+  }
+
+  loadTasks(): void {
+    const loadMethod = this.isVolunteer() ? this.taskService.getTasksByVolunteer() : this.taskService.getTasksByResponsible();
+    
+    loadMethod.subscribe({
+      next: (tasks) => {
+        console.log('Tasks loaded:', tasks);
+        this.myTasks = tasks;
+        this.myTasks.forEach((task) => {
+          this.newComment[task.id] = '';
+          // Fetch comments for each task
+          this.taskService.getCommentsByTaskId(task.id).subscribe({
+            next: (comments) => {
+              task.comments = comments;
+            },
+            error: (err) => {
+              console.error(`Error loading comments for task ${task.id}:`, err);
+              task.comments = [];
+            }
+          });
+        });
+      },
+      error: (err) => {
+        console.error('Error loading tasks:', err);
+        alert('Failed to load tasks');
+      }
     });
   }
 
   getStatusLabel(status: string): string {
     switch (status) {
-      case 'toDo':
+      case 'ToDo':
         return 'À faire';
-      case 'inProgress':
+      case 'InProgress':
         return 'En cours';
-      case 'done':
+      case 'Done':
         return 'Terminée';
       default:
         return status;
@@ -146,80 +78,83 @@ export class MyTasksComponent implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status) {
-      case 'toDo':
+      case 'ToDo':
         return 'status-todo';
-      case 'inProgress':
+      case 'InProgress':
         return 'status-in-progress';
-      case 'done':
+      case 'Done':
         return 'status-completed';
       default:
         return '';
     }
   }
 
- 
-
-  changeTaskStatus(task: Task, newStatus: 'toDo' | 'inProgress' | 'done'): void {
+  changeTaskStatus(task: Task, newStatus: 'ToDo' | 'InProgress' | 'Done'): void {
     if (task.status === newStatus) return;
 
+    console.log(`Attempting to change status of task ${task.id} from ${task.status} to ${newStatus} for user ${this.userId}`);
     this.submitting = true;
 
-    // Simuler l'envoi au serveur
-    setTimeout(() => {
-      task.status = newStatus;
-
-      // Si la tâche est marquée comme terminée, ajouter la date de complétion
-      if (newStatus === 'done') {
-        task.completedAt = new Date().toISOString();
-      } else {
-        // Si la tâche n'est plus terminée, supprimer la date de complétion et la note
-        task.completedAt = undefined;
-        task.note = undefined;
+    this.taskService.updateTaskStatus(task.id, newStatus).subscribe({
+      next: (updatedTask) => {
+        console.log(`Successfully updated task ${task.id} status to ${updatedTask.status}`);
+        task.status = updatedTask.status;
+        task.completedAt = updatedTask.status === 'Done' ? new Date().toISOString() : undefined;
+        if (task.status !== 'Done') {
+          task.note = undefined;
+        }
+        this.submitting = false;
+        alert(`Statut de la tâche mis à jour: ${this.getStatusLabel(newStatus)}`);
+      },
+      error: (err) => {
+        console.error(`Failed to update task ${task.id} status:`, err);
+        this.submitting = false;
+        alert('Erreur lors de la mise à jour du statut: ' + (err.message || 'Veuillez réessayer'));
       }
-
-      this.submitting = false;
-      alert(`Statut de la tâche mis à jour: ${this.getStatusLabel(newStatus)}`);
-    }, 1000);
+    });
   }
 
- rateTask(task: Task, note: number | undefined): void {
-  if (task.status !== 'done') {
-    alert('Vous ne pouvez noter que les tâches terminées.');
-    return;
-  }
-  if (note == null || note < 0) {
-    alert('Veuillez entrer une note valide (nombre positif).');
-    return;
-  }
+  rateTask(task: Task, note: number | undefined): void {
+    if (task.status !== 'Done') {
+      alert('Vous ne pouvez noter que les tâches terminées.');
+      return;
+    }
+    if (note == null || note < 0 || note > 100) {
+      alert('Veuillez entrer une note valide (entre 0 et 100).');
+      return;
+    }
 
-  this.submitting = true;
-
-  // Simuler l'envoi au serveur
-  setTimeout(() => {
-    task.note = note;
-    this.submitting = false;
-    alert(`Tâche évaluée avec la note de ${note}`);
-  }, 1000);
-}
+    this.submitting = true;
+    this.taskService.assignTaskNote(task.id, note).subscribe({
+      next: (updatedTask) => {
+        task.note = updatedTask.note;
+        this.submitting = false;
+        alert(`Tâche évaluée avec la note de ${note}`);
+      },
+      error: (err) => {
+        this.submitting = false;
+        alert('Erreur lors de l\'assignation de la note: ' + (err.message || 'Veuillez réessayer'));
+      }
+    });
+  }
 
   addComment(task: Task): void {
     if (!this.newComment[task.id].trim()) return;
     this.submitting = true;
 
-    const comment: TaskComment = {
-      id: Date.now().toString(),
-      userId: this.userId,
-      userName: this.userName,
-      content: this.newComment[task.id],
-      createdAt: new Date().toISOString(),
-    };
-
-    // Simuler l'envoi au serveur
-    setTimeout(() => {
-      task.comments.push(comment);
-      this.newComment[task.id] = '';
-      this.submitting = false;
-    }, 1000);
+    this.taskService.createComment(task.id, this.newComment[task.id]).subscribe({
+      next: (comment) => {
+        task.comments.push(comment);
+        this.newComment[task.id] = '';
+        this.submitting = false;
+        alert('Commentaire ajouté avec succès');
+      },
+      error: (err) => {
+        console.error(`Error adding comment to task ${task.id}:`, err);
+        this.submitting = false;
+        alert('Erreur lors de l\'ajout du commentaire: ' + (err.message || 'Veuillez réessayer'));
+      }
+    });
   }
 
   getTimeAgo(dateString: string): string {
@@ -238,10 +173,11 @@ export class MyTasksComponent implements OnInit {
     }
   }
 
-  isVOLUNTARY(): boolean {
-    return localStorage.getItem('userRole') === 'VOLUNTARY';
+  isVolunteer(): boolean {
+    return this.userRole === 'VOLUNTARY';
   }
+
   isResponsible(): boolean {
-    return localStorage.getItem('userRole') === 'RESPONSIBLE';
+    return this.userRole === 'RESPONSIBLE';
   }
 }

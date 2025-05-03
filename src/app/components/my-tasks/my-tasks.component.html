@@ -1,119 +1,119 @@
 <section class="my-tasks-section">
-    <h2 class="tasks-title">Tasks</h2>
-  
-    <div class="tasks-container">
-      <div *ngIf="myTasks.length === 0" class="no-tasks">
-        <p>Vous n'avez aucune tâche assignée pour le moment</p>
-      </div>
-  
-      <div class="tasks-grid">
-        <div class="task-card" *ngFor="let task of myTasks">
-          <div class="task-header">
-            <div class="task-icon">
-              <i class="fas fa-tasks"></i>
-            </div>
-            <div class="task-title">
-              <h3>{{ task.title }}</h3>
-              <div class="task-meta">
-                <span [class]="'task-status ' + getStatusClass(task.status)">{{ getStatusLabel(task.status) }}</span>
-              </div>
-            </div>
-            <div class="task-status-actions">
-              <select 
-                [(ngModel)]="task.status"
-                (ngModelChange)="changeTaskStatus(task, $event)"
-                [disabled]="submitting"
-                class="status-select"
-                *ngIf="isVOLUNTARY()"
-              >
-                <option value="toDo">À faire</option>
-                <option value="inProgress">En cours</option>
-                <option value="done">Terminée</option>
-              </select>
+  <h2 class="tasks-title">Tasks</h2>
+
+  <div class="tasks-container">
+    <div *ngIf="myTasks.length === 0" class="no-tasks">
+      <p>Vous n'avez aucune tâche assignée pour le moment</p>
+    </div>
+
+    <div class="tasks-grid">
+      <div class="task-card" *ngFor="let task of myTasks">
+        <div class="task-header">
+          <div class="task-icon">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <div class="task-title">
+            <h3>{{ task.title }}</h3>
+            <div class="task-meta">
+              <span [class]="'task-status ' + getStatusClass(task.status)">{{ getStatusLabel(task.status) }}</span>
             </div>
           </div>
-  
-          <div class="task-body">
-            <div class="task-description">
-              <h4>Description</h4>
-              <p>{{ task.description }}</p>
+          <div class="task-status-actions">
+            <select
+              [(ngModel)]="task.status"
+              (ngModelChange)="changeTaskStatus(task, $event)"
+              [disabled]="submitting"
+              class="status-select"
+              *ngIf="isVolunteer()"
+            >
+              <option value="ToDo">À faire</option>
+              <option value="InProgress">En cours</option>
+              <option value="Done">Terminée</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="task-body">
+          <div class="task-description">
+            <h4>Description</h4>
+            <p>{{ task.description }}</p>
+          </div>
+
+          <div class="task-details">
+            <div *ngIf="task.deadline" class="task-deadline">
+              <i class="fas fa-calendar-alt"></i> Deadline: {{ task.deadline | date:'dd/MM/yyyy' }}
             </div>
-  
-            <div class="task-details">
-              <div *ngIf="task.deadline" class="task-deadline">
-                <i class="fas fa-calendar-alt"></i> deadline: {{ task.deadline | date:'dd/MM/yyyy' }}
-              </div>
-              <div class="task-created">
-                <i class="fas fa-clock"></i> Créée le: {{ task.createdAt | date:'dd/MM/yyyy' }}
-              </div>
-              <div *ngIf="task.completedAt" class="task-completed">
-                <i class="fas fa-check-circle"></i> Terminée le: {{ task.completedAt | date:'dd/MM/yyyy' }}
-              </div>
+            <div class="task-created">
+              <i class="fas fa-clock"></i> Créée le: {{ task.createdAt | date:'dd/MM/yyyy' }}
             </div>
-  
-            <!-- note section for completed tasks -->
-           <!-- note section for completed tasks -->
-           <div *ngIf="task.status === 'done' && isResponsible()" class="task-rating">
+            <div *ngIf="task.completedAt" class="task-completed">
+              <i class="fas fa-check-circle"></i> Terminée le: {{ task.completedAt | date:'dd/MM/yyyy' }}
+            </div>
+            <div *ngIf="task.note != null" class="task-note">
+              <i class="fas fa-star"></i> Note: {{ task.note }}
+            </div>
+            <div class="task-responsible">
+              <i class="fas fa-user"></i> {{ isResponsible() ? 'Volontaire' : 'Responsable' }}: {{ isResponsible() ? task.volunteerName : task.responsibleName }}
+            </div>
+          </div>
+
+          <div *ngIf="task.status === 'Done' && isResponsible()" class="task-rating">
             <h4>Évaluation</h4>
-              
-                <div class="rating-field">
-                  <input 
-                    type="number" 
-                    id="note-{{task.id}}" 
-                    [(ngModel)]="task.note" 
-                    placeholder="Entrez une note" 
-                    min="0" 
-                    step="any" 
-                    [disabled]="submitting"
-                    class="rating-input"
-                  />
-                  <button 
-                    class="rating-submit-button" 
-                    (click)="rateTask(task, task.note)" 
-                    [disabled]="task.note == null || task.note < 0 || submitting"
-                  >
-                    <i class="fas fa-check"></i>
-                    <span>Valider</span>
-                  </button>
-                </div>
-             
+            <div class="rating-field">
+              <input
+                type="number"
+                id="note-{{task.id}}"
+                [(ngModel)]="task.note"
+                placeholder="Entrez une note (0-100)"
+                min="0"
+                max="100"
+                step="1"
+                [disabled]="submitting"
+                class="rating-input"
+              />
+              <button
+                class="rating-submit-button"
+                (click)="rateTask(task, task.note)"
+                [disabled]="task.note == null || task.note < 0 || task.note > 100 || submitting"
+              >
+                <i class="fas fa-check"></i>
+                <span>Valider</span>
+              </button>
+            </div>
           </div>
-          
-  
-            <!-- Comments section -->
-            <div class="task-comments">
-              <h4>Commentaires ({{ task.comments.length }})</h4>
-  
-              <div class="comments-list">
-                <div class="comment" *ngFor="let comment of task.comments">
-                  <div class="comment-header">
-                    <span class="comment-author">{{ comment.userName }}</span>
-                    <span class="comment-date">{{ getTimeAgo(comment.createdAt) }}</span>
-                  </div>
-                  <div class="comment-content">
-                    {{ comment.content }}
-                  </div>
+
+          <div class="task-comments">
+            <h4>Commentaires ({{ task.comments.length }})</h4>
+
+            <div class="comments-list">
+              <div class="comment" *ngFor="let comment of task.comments">
+                <div class="comment-header">
+                  <span class="comment-author">{{ comment.userEmail }}</span>
+                  <span class="comment-date">{{ getTimeAgo(comment.createdAt) }}</span>
+                </div>
+                <div class="comment-content">
+                  {{ comment.content }}
                 </div>
               </div>
-  
-              <!-- Add comment form -->
-              <div class="add-comment">
-                <textarea 
-                  [(ngModel)]="newComment[task.id]" 
-                  placeholder="Ajouter un commentaire..." 
-                  rows="2"
-                ></textarea>
-                <button 
-                  class="comment-button" 
-                  (click)="addComment(task)" 
-                  [disabled]="!newComment[task.id].trim() || submitting"
-                >
-                  <i class="fas fa-paper-plane"></i>
-                </button>
-              </div>
+            </div>
+
+            <div class="add-comment">
+              <textarea
+                [(ngModel)]="newComment[task.id]"
+                placeholder="Ajouter un commentaire..."
+                rows="2"
+              ></textarea>
+              <button
+                class="comment-button"
+                (click)="addComment(task)"
+                [disabled]="!newComment[task.id]?.trim() || submitting"
+              >
+                <i class="fas fa-paper-plane"></i>
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>

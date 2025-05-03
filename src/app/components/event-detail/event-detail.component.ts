@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
+import { EventService } from '../../services/event-service.service';
+import { Event } from '../../services/event-service.service';
 @Component({
   selector: 'app-event-detail',
   standalone: true,
@@ -10,22 +11,63 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./event-detail.component.css'],
 })
 export class EventDetailComponent implements OnInit {
-  event: any = {
-    id: '1',
-    title: 'Tech Conference 2025',
-    imageUrl: 'https://example.com/event-image.jpg',
-    date: '2025-06-15',
-  };
+  event: Event | null = null;
   currentTab: string = 'detail';
+  isInterested: boolean = false;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private eventService: EventService
+  ) {}
 
   ngOnInit(): void {
+    const eventId = this.route.snapshot.paramMap.get('id');
+    if (eventId) {
+      this.loadEvent(+eventId);
+    }
+
     this.route.firstChild?.url.subscribe((url) => {
       this.currentTab = url[0]?.path || 'detail';
     });
   }
 
+  loadEvent(eventId: number): void {
+    this.eventService.getEventById(eventId).subscribe({
+      next: (event) => {
+        this.event = {
+          ...event,
+          startDate: new Date(event.startDate),
+          endDate: new Date(event.endDate),
+          createdAt: new Date(event.createdAt)
+        };
+        console.log('Event loaded:', this.event);
+        console.log('Image path:', this.event.imagePath);
+      },
+      error: (err) => {
+        console.error('Error loading event:', err);
+        this.event = null;
+      }
+    });
+  }
+
+  getImageUrl(imagePath: string): string {
+    if (!imagePath) return '';
+    // Normaliser les barres obliques
+    const normalizedPath = imagePath.replace(/\\/g, '/');
+    // Extraire uniquement le nom du fichier
+    const fileName = normalizedPath.split('/').pop() || '';
+    // Construire l'URL correcte pointant vers le backend
+    const imageUrl = `http://localhost:8089/images/${fileName}`;
+    console.log('Generated image URL:', imageUrl);
+    return imageUrl;
+  }
+
+  onImageError(errorEvent: ErrorEvent): void {
+    const target = errorEvent.target as HTMLImageElement;
+    console.error('Failed to load image:', target.src);
+    target.src = 'https://via.placeholder.com/150?text=Image+Not+Found';
+  }
 
   isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'ADMIN';
@@ -36,17 +78,15 @@ export class EventDetailComponent implements OnInit {
   }
 
   onEditEvent(): void {
-    alert('Edit event functionality not implemented');
-    
-  }
-  
-  toggleInterest(): void {
     if (this.event) {
-      this.event.isInterested = !this.event.isInterested;
-      // Simulate server update (optional alert for feedback)
-      setTimeout(() => {
-        alert(this.event?.isInterested ? 'Vous êtes intéressé par cet événement !' : 'Vous avez retiré votre intérêt.');
-      }, 500);
+      this.router.navigate(['admin/events', this.event.id, 'edit']);
     }
+  }
+
+  toggleInterest(): void {
+    this.isInterested = !this.isInterested;
+    setTimeout(() => {
+      alert(this.isInterested ? 'Vous êtes intéressé par cet événement !' : 'Vous avez retiré votre intérêt.');
+    }, 500);
   }
 }

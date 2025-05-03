@@ -1,6 +1,6 @@
 <section class="tasks-section">
   <div class="tasks-header">
-    <h2 class="tasks-title">Tasks</h2>
+    <h2 class="tasks-title">My Tasks</h2>
     <button
       *ngIf="isResponsible()"
       class="add-task-button"
@@ -42,21 +42,14 @@
           </div>
           <div class="task-title">
             <h3>{{ task.title }}</h3>
-            <div class="task-meta">
-              <span [class]="'task-status ' + getStatusClass(task.status)">{{
-                getStatusLabel(task.status)
-              }}</span>
-              <span *ngIf="task.teamId" class="task-team">{{
-                getTeamName(task.teamId)
-              }}</span>
-            </div>
+
           </div>
           <button
             class="apply-button"
             (click)="openApplyForm(task)"
             *ngIf="canApply()"
           >
-            <i class="fas fa-user-plus"></i>
+            <i class="fas fa-user-plus"></i> Apply
           </button>
         </div>
         <div class="task-body">
@@ -64,16 +57,7 @@
             <h4>Description</h4>
             <p>{{ task.description }}</p>
           </div>
-          <div class="task-details">
-            <div *ngIf="task.deadline" class="task-deadline">
-              <i class="fas fa-calendar-alt"></i> Deadline:
-              {{ task.deadline | date: "dd/MM/yyyy" }}
-            </div>
-            <div class="task-created">
-              <i class="fas fa-clock"></i> Created on:
-              {{ task.createdAt | date: "dd/MM/yyyy" }}
-            </div>
-          </div>
+        
         </div>
       </div>
     </div>
@@ -124,10 +108,6 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="deadline">Deadline</label>
-            <input type="date" id="deadline" formControlName="deadline" />
-          </div>
 
           <div class="form-group">
             <label for="teamId">Team (optional)</label>
@@ -164,17 +144,17 @@
   <div class="modal" *ngIf="showApplyForm">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Apply for Task</h2>
+        <h2>Apply for Task: {{ selectedTask?.title }}</h2>
         <button class="close-button" (click)="closeApplyForm()">×</button>
       </div>
       <div class="modal-body">
         <form [formGroup]="applyForm" (ngSubmit)="submitApplication()">
           <div class="form-group">
-            <label for="motivation">Why do you want to take on this task?</label>
+            <label for="motivation">Motivation</label>
             <textarea
               id="motivation"
               formControlName="motivation"
-              placeholder="Describe your motivations and skills"
+              placeholder="Why do you want to take on this task?"
             ></textarea>
             <div
               *ngIf="
@@ -187,7 +167,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="experience">Your experience</label>
+            <label for="experience">Experience</label>
             <textarea
               id="experience"
               formControlName="experience"
@@ -204,13 +184,13 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="cv">CV (optional)</label>
+            <label for="cv">CV (PDF, optional)</label>
             <div class="file-upload">
               <input
                 type="file"
                 id="cv"
                 (change)="onFileSelected($event)"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf"
               />
               <label for="cv" class="file-upload-label">
                 <i class="fas fa-upload"></i> Choose a file

@@ -1,18 +1,22 @@
-<section class="event-section" *ngIf="event.postes && event.postes.length > 0">
+<section class="event-section" *ngIf="!loadingPostes && postes.length > 0">
   <div class="postes-header">
-    <h2 class="postes-title"> </h2>
-    <button *ngIf="isAdmin()" class="add-post-button" (click)="openAddPostForm()">
-     Ajouter un poste
-    </button>
+    <h2 class="postes-title">Postes disponibles</h2>
   </div>
 
   <div class="postes-container">
     <div class="postes-navigation">
-      <button class="nav-button prev" (click)="prevPostes()" [disabled]="currentPosteIndex === 0">
+      <button
+        class="nav-button prev"
+        (click)="prevPostes()"
+        [disabled]="currentPosteIndex === 0"
+      >
         <i class="fas fa-chevron-left"></i>
       </button>
-      <button class="nav-button next" (click)="nextPostes()" 
-              [disabled]="!event.postes || (currentPosteIndex + 1) * postesPerPage >= event.postes.length">
+      <button
+        class="nav-button next"
+        (click)="nextPostes()"
+        [disabled]="(currentPosteIndex + 1) * postesPerPage >= postes.length"
+      >
         <i class="fas fa-chevron-right"></i>
       </button>
     </div>
@@ -28,15 +32,21 @@
             <p>{{ poste.status }}</p>
             <p *ngIf="poste.teamId">Équipe: {{ getTeamName(poste.teamId) }}</p>
           </div>
-          
-          <button class="apply-button" (click)="openApplyForm(poste)" *ngIf="canApply()">
+
+          <button
+            class="apply-button"
+            (click)="openApplyForm(poste)"
+            *ngIf="canApply()"
+          >
             <i class="fas fa-user-plus"></i>
           </button>
         </div>
         <div class="poste-body">
           <h4>Description du poste</h4>
           <p>{{ poste.description }}</p>
-          <h4 *ngIf="poste.competences && poste.competences.length > 0">Compétences</h4>
+          <h4 *ngIf="poste.competences && poste.competences.length > 0">
+            Compétences
+          </h4>
           <ul>
             <li *ngFor="let competence of poste.competences">
               {{ competence }}
@@ -48,57 +58,14 @@
   </div>
 </section>
 
-<div class="modal" *ngIf="showAddPostForm">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Ajouter un poste</h2>
-      <button class="close-button" (click)="closeAddPostForm()">×</button>
-    </div>
-    <div class="modal-body">
-      <form [formGroup]="addPostForm" (ngSubmit)="submitPost()">
-        <div class="form-group">
-          <label for="title">Titre du poste</label>
-          <input type="text" id="title" formControlName="title" placeholder="Titre" />
-          <div *ngIf="addPostForm.get('title')?.invalid && addPostForm.get('title')?.touched" class="error-message">
-            Titre requis
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea id="description" formControlName="description" placeholder="Description"></textarea>
-          <div *ngIf="addPostForm.get('description')?.invalid && addPostForm.get('description')?.touched" class="error-message">
-            Description requise
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="teamId">team</label>
-          <select id="teamId" formControlName="teamId">
-            <option value="" disabled>Sélectionner une équipe</option>
-            <option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</option>
-          </select>
-          <div *ngIf="addPostForm.get('teamId')?.invalid && addPostForm.get('teamId')?.touched" class="error-message">
-            Équipe requise
-          </div>
-        </div>
-       
-        <div class="form-group">
-          <label for="type">Status</label>
-          <input type="text" id="type" formControlName="type" placeholder="Type" />
-        </div>
-        <div class="form-group">
-          <label for="competences">Compétences (séparées par des virgules, optionnel)</label>
-          <input type="text" id="competences" formControlName="competences" placeholder="Compétences" />
-        </div>
-        <div class="form-actions">
-          <button type="button" class="cancel-button" (click)="closeAddPostForm()">Annuler</button>
-          <button type="submit" class="submit-button" [disabled]="addPostForm.invalid || submitting">
-            <span *ngIf="!submitting">Ajouter le poste</span>
-            <span *ngIf="submitting">Envoi en cours...</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="loading" *ngIf="loadingTeams || loadingPostes">
+  <div class="spinner"></div>
+  <p>Chargement des postes...</p>
+</div>
+
+<div class="no-postes" *ngIf="!loadingPostes && postes.length === 0">
+  <i class="fas fa-info-circle"></i>
+  <p>Aucun poste disponible pour le moment.</p>
 </div>
 
 <div class="modal" *ngIf="showApplyForm">
@@ -110,15 +77,52 @@
     <div class="modal-body">
       <form [formGroup]="applyForm" (ngSubmit)="submitApplication()">
         <div class="form-group">
+          <label for="experience">Expérience</label>
+          <textarea
+            id="experience"
+            formControlName="experience"
+            placeholder="Décrivez votre expérience pertinente"
+          ></textarea>
+          <div
+            *ngIf="
+              applyForm.get('experience')?.invalid &&
+              applyForm.get('experience')?.touched
+            "
+            class="error-message"
+          >
+            L'expérience est requise
+          </div>
+        </div>
+        <div class="form-group">
           <label for="motivation">Lettre de motivation</label>
-          <textarea id="motivation" formControlName="motivation" placeholder="Pourquoi souhaitez-vous ce poste?"></textarea>
-          <div *ngIf="applyForm.get('motivation')?.invalid && applyForm.get('motivation')?.touched" class="error-message">
+          <textarea
+            id="motivation"
+            formControlName="motivation"
+            placeholder="Pourquoi souhaitez-vous ce poste?"
+          ></textarea>
+          <div
+            *ngIf="
+              applyForm.get('motivation')?.invalid &&
+              applyForm.get('motivation')?.touched
+            "
+            class="error-message"
+          >
             Lettre de motivation requise
           </div>
         </div>
         <div class="form-actions">
-          <button type="button" class="cancel-button" (click)="closeApplyForm()">Annuler</button>
-          <button type="submit" class="submit-button" [disabled]="applyForm.invalid || submitting">
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="closeApplyForm()"
+          >
+            Annuler
+          </button>
+          <button
+            type="submit"
+            class="submit-button"
+            [disabled]="applyForm.invalid || submitting"
+          >
             <span *ngIf="!submitting">Envoyer ma candidature</span>
             <span *ngIf="submitting">Envoi en cours...</span>
           </button>
