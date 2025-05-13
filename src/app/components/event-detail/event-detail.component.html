@@ -1,0 +1,44 @@
+<div class="event-detail-container" *ngIf="event; else loading">
+  <div class="event-header">
+    <div class="event-header-content">
+      <!-- Image + titre -->
+      <div class="event-image" *ngIf="event.imagePath">
+        <img [src]="event.imagePath" alt="{{ event.title }}">
+      </div>
+      <div class="event-title-section">
+        <h1>{{ event.title }}</h1>
+        <p>{{ event.startDate | date: 'dd/MM/yyyy' }} - {{ event.endDate | date: 'dd/MM/yyyy' }}</p>
+      </div>
+      <!-- Bouton Intéressé pour voluntary -->
+      <button
+        *ngIf="isVOLUNTARY()"
+        class="interested-button"
+        (click)="toggleInterest()"
+        [ngClass]="{'star-interested': isInterested}"
+      >
+        <i class="fas fa-star"></i>
+      </button>
+    </div>
+
+    <div class="event-nav-container">
+      <nav class="event-nav">
+        <ul>
+          <li routerLinkActive="active" [routerLink]="['detail']">Détails</li>
+          <li routerLinkActive="active" [routerLink]="['teams']">Teams</li>
+        </ul>
+      </nav>
+
+     
+    </div>
+  </div>
+  <ng-container>
+    <router-outlet></router-outlet>
+  </ng-container>
+</div>
+
+<ng-template #loading>
+  <div class="loading">
+    <div class="spinner"></div>
+    <p>Chargement de l'événement...</p>
+  </div>
+</ng-template>

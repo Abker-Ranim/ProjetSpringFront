@@ -1,0 +1,73 @@
+<div class="event-content">
+  <div class="event-main">
+    <section class="event-section">
+      <h2>Description</h2>
+      <p>{{ event.description }}</p>
+    </section>
+
+    <section class="event-section">
+      <h2>Vision</h2>
+      <p>{{ event.vision }}</p>
+    </section>
+
+    <section class="event-section">
+      <h2>Partagez cet événement</h2>
+      <div class="social-share">
+        <button class="social-button facebook" (click)="shareOnFacebook()">
+          <i class="fab fa-facebook-f"></i> Facebook
+        </button>
+        <button class="social-button twitter" (click)="shareOnTwitter()">
+          <i class="fab fa-twitter"></i> Twitter
+        </button>
+        <button class="social-button linkedin" (click)="shareOnLinkedIn()">
+          <i class="fab fa-linkedin-in"></i> LinkedIn
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="event-sidebar">
+    <div class="info-card">
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-calendar"></i>
+        </div>
+        <div class="info-content">
+          <h3>Date</h3>
+          <p>{{ event.startDate | date: "dd MMMM, yyyy" }} à {{ startHour }}</p>
+          <p>{{ event.endDate | date: "dd MMMM, yyyy" }} à {{ endHour }}</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-building"></i>
+        </div>
+        <div class="info-content">
+          <h3>Organisation</h3>
+          <p>{{ event.organization }}</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="info-content">
+          <h3>Participants</h3>
+          <p>{{ event.participants }}</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-map-marker-alt"></i>
+        </div>
+        <div class="info-content">
+          <h3>Lieu</h3>
+          <p>{{ event.location }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

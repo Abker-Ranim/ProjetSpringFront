@@ -1,0 +1,61 @@
+<section class="leaderboard-section">
+    
+    <div class="leaderboard-container">
+      <div class="leaderboard-filters">
+        <div class="search-box">
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Rechercher un utilisateur..." 
+            [(ngModel)]="searchTerm"
+            (input)="search()"
+          >
+          <i class="fas fa-search search-icon"></i>
+        </div>
+  
+      </div>
+      
+      <div class="leaderboard-table-container">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th class="th-rank" (click)="setSortBy('rank')">
+                Rang <i class="fas" [ngClass]="getSortIcon('rank')"></i>
+              </th>
+              <th class="th-user" (click)="setSortBy('email')">
+                Utilisateur <i class="fas" [ngClass]="getSortIcon('email')"></i>
+              </th>
+            
+              <th class="th-score" (click)="setSortBy('score')">
+                Score <i class="fas" [ngClass]="getSortIcon('score')"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers; let i = index" [ngClass]="{'row-alternate': i % 2 === 1}">
+              <td class="td-rank">
+                <div class="rank-badge" >
+                  {{ user.rank }}
+                </div>
+              </td>
+              <td class="td-user">
+                <div class="user-info">
+              
+                  <div class="user-name">{{ user.email }}</div>
+                </div>
+              </td>
+              <td class="td-score">{{ user.score }}</td>
+             
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="no-results" *ngIf="filteredUsers.length === 0">
+        <p>Aucun utilisateur trouvé</p>
+      </div>
+      
+  
+    </div>
+  </section>
+  

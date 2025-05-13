@@ -1,0 +1,190 @@
+/* Chargement */
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #007bff;
+  padding: 20px;
+}
+
+/* Styles généraux */
+.candidate-details {
+  width: 90%;
+  margin: 0 auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* Effet de fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* En-tête du candidat */
+.candidate-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-picture {
+  margin-right: 20px;
+}
+
+.profile-picture img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.candidate-info h2 {
+  font-size: 24px;
+  margin: 0;
+  font-weight: bold;
+}
+
+.role {
+  font-size: 16px;
+  color: #777;
+}
+
+/* Carte des informations */
+.candidate-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.info-item {
+  margin-bottom: 10px;
+}
+
+.info-item label {
+  font-weight: bold;
+  color: #555;
+}
+
+.info-item p {
+  color: #444;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.cv-section {
+  margin-top: 20px;
+}
+
+.cv-link-btn {
+  display: inline-block;
+  padding: 12px 20px;
+  background-color: #2e86ab;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.cv-link-btn:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.accept-btn,
+.decline-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+  width: auto;
+  transition: all 0.3s ease;
+}
+
+.accept-btn {
+  background-color: #218838;
+  color: white;
+}
+
+.accept-btn:hover {
+  background-color: #1e7e34;
+  transform: scale(1.05);
+}
+
+.decline-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.decline-btn:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .candidate-details {
+    width: 95%;
+  }
+
+  .candidate-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-picture img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .candidate-info h2 {
+    font-size: 20px;
+  }
+
+  .candidate-card {
+    padding: 15px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .accept-btn,
+  .decline-btn {
+    width: 100%;
+  }
+}

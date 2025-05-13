@@ -1,0 +1,217 @@
+/* Base Styles */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  background: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.app-title {
+  color: #2e86ab; /* Blue color from the image */
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Auth Form Styles */
+.auth-form {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.auth-form.active {
+  display: block;
+  opacity: 1;
+}
+
+.auth-title {
+  color: #2e86ab;
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.auth-subtitle {
+  color: #666;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+/* Form Elements */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2e86ab;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+}
+
+.input-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 16px;
+}
+
+.error-messages {
+  min-height: 20px;
+}
+
+.text-danger {
+  color: #e74c3c;
+  font-size: 12px;
+}
+
+/* Checkbox */
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+}
+
+.remember-me input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2e86ab;
+}
+
+.remember-me label {
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+}
+
+/* Buttons */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #2e86ab;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.auth-btn:hover {
+  background-color: #2e86ab;
+}
+
+.auth-btn:disabled {
+  background-color: #4b6d9c;
+  cursor: not-allowed;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background-color: #eee;
+}
+
+.divider-text {
+  color: #777;
+  font-size: 13px;
+}
+
+
+
+/* Error Messages */
+.auth-error {
+  color: #e74c3c;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 10px;
+  padding: 8px;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+/* Switch Link */
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.auth-switch a {
+  color: #2e86ab;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+.error-message {
+  color: #ff0000; /* Rouge vif */
+  font-size: 12px;
+  margin-top: 5px;
+  font-weight: 500;
+}
+/* Style pour les champs invalides */
+input.invalid {
+  border-color: #ff0000 !important;
+  background-color: #fff0f0;
+}
+

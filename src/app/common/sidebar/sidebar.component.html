@@ -1,0 +1,114 @@
+<aside id="sidebar" class="sidebar">
+  <br />
+
+  <!-- Links visible to all roles -->
+  <div class="menu-category">
+    <span class="category-title">General</span>
+      
+    <div class="menu-item">
+      <a class="menu-link" routerLink="event" routerLinkActive="menu-link-active">
+        <div class="menu-icon">
+          <i class="fas fa-calendar-week"></i>
+        </div>
+        <span class="menu-text">Events</span>
+      </a>
+    </div>
+
+    <!-- Links visible only to Admin -->
+    <div class="menu-item" *ngIf="userRole === 'ADMIN'">
+      <a class="menu-link" routerLink="admin-candidatures" routerLinkActive="menu-link-active">
+        <div class="menu-icon">
+          <i class="fas fa-users-cog"></i>
+        </div>
+        <span class="menu-text">Candidatures</span>
+      </a>
+    </div>
+
+    <!-- Links visible only to Responsible -->
+    <div class="menu-item" *ngIf="userRole !== 'ADMIN'">
+      <a class="menu-link" routerLink="candidatures" routerLinkActive="menu-link-active">
+        <div class="menu-icon">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <span class="menu-text">Candidatures</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="menu-item"  *ngIf="userRole !== 'ADMIN' && userRole !== 'VOLUNTARY'">
+    <a class="menu-link" routerLink="responsible-candidature" routerLinkActive="menu-link-active">
+      <div class="menu-icon">
+        <i class="fas fa-user-check"></i>
+      </div>
+      <span class="menu-text">my candidatures</span>
+    </a>
+  </div>
+
+
+      
+  <!-- Category for tasks -->
+  <div class="menu-category">
+    <span class="category-title">Tasks</span>
+        
+    <div class="menu-item" >
+      <a class="menu-link" routerLink="tasks" routerLinkActive="menu-link-active">
+        <div class="menu-icon">
+          <i class="fas fa-clipboard-list"></i>
+        </div>
+        <span class="menu-text" *ngIf="userRole === 'RESPONSIBLE'">Task Management</span>
+        <span class="menu-text"  *ngIf="userRole !== 'RESPONSIBLE'">tasks</span>
+      </a>
+    </div>
+        
+    <div class="menu-item" *ngIf="userRole === 'RESPONSIBLE' || userRole === 'VOLUNTARY'">
+      <a class="menu-link" routerLink="my-tasks" routerLinkActive="menu-link-active">
+        <div class="menu-icon">
+          <i class="fas fa-tasks"></i>
+        </div>
+        <span class="menu-text" *ngIf="userRole === 'RESPONSIBLE'">Tasks</span>
+        <span class="menu-text" *ngIf="userRole === 'VOLUNTARY'">My Tasks</span>
+
+      </a>
+    </div>
+  </div>
+      
+  <!-- Category for statistics -->
+  <div class="menu-category">
+    <span class="category-title">Statistics</span>
+        
+    <div class="menu-item">
+      <a class="menu-link" routerLink="user-leaderboard" routerLinkActive="menu-link-active">
+        <div class="menu-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <span class="menu-text">Leaderboard</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="menu-category" *ngIf="userRole === 'ADMIN'">
+    <span class="category-title">Dashboard</span>
+        
+    <div class="menu-item">
+      <a class="menu-link" routerLink="user-leaderboard" routerLinkActive="menu-link-active">
+        <div class="menu-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <span class="menu-text">Dashboard</span>
+      </a>
+    </div>
+  </div>
+   
+  <div class="sidemenu-footer">
+    <div class="user-status">
+      <div class="user-avatar">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div class="user-info">
+        <span class="user-name">User</span>
+        <span class="user-role">{{ userRole || 'Guest' }}</span>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- End Sidebar -->

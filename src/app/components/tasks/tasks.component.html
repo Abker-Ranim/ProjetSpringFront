@@ -1,0 +1,232 @@
+<section class="tasks-section">
+  <div class="tasks-header">
+    <h2 class="tasks-title">My Tasks</h2>
+    <button
+      *ngIf="isResponsible()"
+      class="add-task-button"
+      (click)="openAddTaskForm()"
+    >
+      <i class="fas fa-plus"></i> Create
+    </button>
+  </div>
+
+  <div class="tasks-container">
+    <div class="tasks-navigation" *ngIf="tasks.length > tasksPerPage">
+      <button
+        class="nav-button prev"
+        (click)="prevTasks()"
+        [disabled]="currentTaskIndex === 0"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button
+        class="nav-button next"
+        (click)="nextTasks()"
+        [disabled]="
+          !tasks || (currentTaskIndex + 1) * this.tasksPerPage >= tasks.length
+        "
+      >
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <div *ngIf="tasks.length === 0" class="no-tasks">
+      <p>No tasks available at the moment</p>
+    </div>
+
+    <div class="tasks-grid">
+      <div class="task-card" *ngFor="let task of displayedTasks">
+        <div class="task-header">
+          <div class="task-icon">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <div class="task-title">
+            <h3>{{ task.title }}</h3>
+
+          </div>
+          <button
+            class="apply-button"
+            (click)="openApplyForm(task)"
+            *ngIf="canApply()"
+          >
+            <i class="fas fa-user-plus"></i> Apply
+          </button>
+        </div>
+        <div class="task-body">
+          <div class="task-description">
+            <h4>Description</h4>
+            <p>{{ task.description }}</p>
+          </div>
+        
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" *ngIf="showAddTaskForm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create a New Task</h2>
+        <button class="close-button" (click)="closeAddTaskForm()">×</button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="addTaskForm" (ngSubmit)="submitTask()">
+          <div class="form-group">
+            <label for="title">Task Title</label>
+            <input
+              type="text"
+              id="title"
+              formControlName="title"
+              placeholder="Title"
+            />
+            <div
+              *ngIf="
+                addTaskForm.get('title')?.invalid &&
+                addTaskForm.get('title')?.touched
+              "
+              class="error-message"
+            >
+              Title is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              placeholder="Detailed description of the task"
+            ></textarea>
+            <div
+              *ngIf="
+                addTaskForm.get('description')?.invalid &&
+                addTaskForm.get('description')?.touched
+              "
+              class="error-message"
+            >
+              Description is required
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label for="teamId">Team (optional)</label>
+            <select id="teamId" formControlName="teamId">
+              <option value="">No team</option>
+              <option *ngFor="let team of teams" [value]="team.id">
+                {{ team.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="closeAddTaskForm()"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="submit-button"
+              [disabled]="addTaskForm.invalid || submitting"
+            >
+              <span *ngIf="!submitting">Create Task</span>
+              <span *ngIf="submitting">Creating...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" *ngIf="showApplyForm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Apply for Task: {{ selectedTask?.title }}</h2>
+        <button class="close-button" (click)="closeApplyForm()">×</button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="applyForm" (ngSubmit)="submitApplication()">
+          <div class="form-group">
+            <label for="motivation">Motivation</label>
+            <textarea
+              id="motivation"
+              formControlName="motivation"
+              placeholder="Why do you want to take on this task?"
+            ></textarea>
+            <div
+              *ngIf="
+                applyForm.get('motivation')?.invalid &&
+                applyForm.get('motivation')?.touched
+              "
+              class="error-message"
+            >
+              Motivation is required
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="experience">Experience</label>
+            <textarea
+              id="experience"
+              formControlName="experience"
+              placeholder="Describe your relevant experience"
+            ></textarea>
+            <div
+              *ngIf="
+                applyForm.get('experience')?.invalid &&
+                applyForm.get('experience')?.touched
+              "
+              class="error-message"
+            >
+              Experience is required
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cv">CV (PDF, optional)</label>
+            <div class="file-upload">
+              <input
+                type="file"
+                id="cv"
+                (change)="onFileSelected($event)"
+                accept=".pdf"
+              />
+              <label for="cv" class="file-upload-label">
+                <i class="fas fa-upload"></i> Choose a file
+              </label>
+              <span *ngIf="selectedFile" class="file-name">{{
+                selectedFile.name
+              }}</span>
+              <button
+                *ngIf="selectedFile"
+                type="button"
+                class="remove-file"
+                (click)="removeFile()"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="closeApplyForm()"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="submit-button"
+              [disabled]="applyForm.invalid || submitting"
+            >
+              <span *ngIf="!submitting">Submit Application</span>
+              <span *ngIf="submitting">Submitting...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
